@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.beerpong_v2.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "D:\\Workspace_Radtke\\BeerPong_V2\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "BeerPong_V2 [Testing]"
+        }
+      }
+    }
+  ]
+}
