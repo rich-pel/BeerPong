@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class     CupController : MonoBehaviour
 {
+
+    public int CupNumberInGroup;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -15,4 +18,13 @@ public class     CupController : MonoBehaviour
     {
         
     }
+
+    public void DeactivateTheCup()
+    {
+        //Cup Group should be informed that this cup is not available anymore, based on the cup number?
+        gameObject.SetActive(false);
+    }
 }
+
+
+
