@@ -29,6 +29,7 @@ public class BallController : MonoBehaviour
     {
         if (other.gameObject.tag.Equals("CupHitArea"))
         {
+            other.gameObject.GetComponentInParent<CupController>().DeactivateTheCup();
             GameManager.instance.BallFallInCup();
         }
     }
