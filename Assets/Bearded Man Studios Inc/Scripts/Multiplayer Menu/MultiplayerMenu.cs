@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class MultiplayerMenu : MonoBehaviour
 {
-	public InputField ipAddress = null;
+    public InputField ipAddress = null;
 	public InputField portNumber = null;
 	public bool DontChangeSceneOnConnect = false;
 	public string masterServerHost = string.Empty;

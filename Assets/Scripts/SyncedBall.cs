@@ -29,13 +29,11 @@ public class SyncedBall : SyncedBallBehavior
         if (networkObject.IsOwner)
         {
             networkObject.position = transform.position;
-            networkObject.rotation = transform.rotation;
             throwable.attachmentFlags = Hand.AttachmentFlags.VelocityMovement;
         }
         else
         {
             transform.position = networkObject.position;
-            transform.rotation = networkObject.rotation;
             throwable.attachmentFlags = 0;
         }
     }
