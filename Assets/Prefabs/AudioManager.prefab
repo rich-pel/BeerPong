@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1227446308910863890
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1227446308910863900}
+  - component: {fileID: 1227446308910863891}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1227446308910863900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227446308910863890}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1227446308910863891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1227446308910863890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c5375c763fb55d4b83d33a913307a53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - name: Ballhitcup
+    clip: {fileID: 8300000, guid: f95ef17183df0b345a44078bf634216d, type: 3}
+    volume: 0.8
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - name: Ballhittable
+    clip: {fileID: 8300000, guid: e2c97b4e154d31245993a570827d6b99, type: 3}
+    volume: 0.36
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - name: Takeball
+    clip: {fileID: 8300000, guid: 0e9fa0bb27232f8448e0803fb16fb64a, type: 3}
+    volume: 0.54
+    pitch: 2.07
+    loop: 0
+    source: {fileID: 0}
+  - name: You won!
+    clip: {fileID: 8300000, guid: 3b5424699544b974d8309d87e095ddee, type: 3}
+    volume: 0.61
+    pitch: 1
+    loop: 0
+    source: {fileID: 0}
+  - name: Background Theme
+    clip: {fileID: 8300000, guid: b71a49a29d45d974e8b8d3141839a7b6, type: 3}
+    volume: 0.77
+    pitch: 0.53
+    loop: 1
+    source: {fileID: 0}
+  - name: Ballhitwall
+    clip: {fileID: 8300000, guid: f9c2017904a443b4e93b839a8e9736a9, type: 3}
+    volume: 0.77
+    pitch: 1.23
+    loop: 0
+    source: {fileID: 0}
+  - name: Ballhitcounter
+    clip: {fileID: 8300000, guid: db52cff0bb87a3e4993002c678a91b6d, type: 3}
+    volume: 0.77
+    pitch: 1.23
+    loop: 0
+    source: {fileID: 0}
+  - name: Ballhitground
+    clip: {fileID: 8300000, guid: 06a51d138cd41864c9544b42275db3bc, type: 3}
+    volume: 0.77
+    pitch: 1.23
+    loop: 0
+    source: {fileID: 0}

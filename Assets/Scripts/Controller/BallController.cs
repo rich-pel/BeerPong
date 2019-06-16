@@ -18,12 +18,39 @@ public class BallController : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         //Maybe just if the collision enter the ballFallBeside
-        if (other.gameObject.tag.Equals("Ground") || other.gameObject.tag.Equals("Wall") ||
-            other.gameObject.tag.Equals("Table"))
+        if (other.gameObject.tag.Equals("Ground"))
+        {
+
+            GameManager.instance.BallFallBeside();
+
+            FindObjectOfType<AudioManager>().Play("Ballhitground");
+        }
+
+        else if (other.gameObject.tag.Equals("Wall"))
         {
             GameManager.instance.BallFallBeside();
+
+            FindObjectOfType<AudioManager>().Play("Ballhitwall");
         }
-    }
+
+        else if (other.gameObject.tag.Equals("Table"))
+        { 
+            GameManager.instance.BallFallBeside();
+
+            FindObjectOfType<AudioManager>().Play("Ballhittable");
+
+        }
+        //we need a counter 
+        else if (other.gameObject.tag.Equals("Counter"))
+        { 
+            GameManager.instance.BallFallBeside();
+
+            FindObjectOfType<AudioManager>().Play("Ballhitcounter");
+
+        }
+        
+    } 
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -31,11 +58,16 @@ public class BallController : MonoBehaviour
         {
             other.gameObject.GetComponentInParent<CupController>().DeactivateTheCup();
             GameManager.instance.BallFallInCup();
+
+            FindObjectOfType<AudioManager>().Play("Ballhitcup");
+
         }
     }
 
     public void WasTaken()
     {
         BallManager.instance.BallIsGrabbed();
+
+        FindObjectOfType<AudioManager>().Play("Takeball");
     }
 }
