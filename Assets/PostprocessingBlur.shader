@@ -6,6 +6,7 @@
 		[KeywordEnum(Low, Medium, High)] _Samples ("Sample amount", Float) = 0
 		[Toggle(GAUSS)] _Gauss ("Gaussian Blur", float) = 0
 		[PowerSlider(3)]_StandardDeviation("Standard Deviation (Gauss only)", Range(0.00, 0.3)) = 0.02
+	    [KeywordEnum(Vertical, Horizontal)] _Direction ("_Direction", Float) = 0
 	}
 
 	SubShader{
