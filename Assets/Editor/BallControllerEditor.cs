@@ -3,8 +3,8 @@ using BeardedManStudios.Forge.Networking.Unity;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(SyncedBall))]
-public class SyncedBallEditor : Editor
+[CustomEditor(typeof(BallController))]
+public class BallControllerEditor : Editor
 {
     int selectedIndex = -1;
 
@@ -12,7 +12,7 @@ public class SyncedBallEditor : Editor
     {
         DrawDefaultInspector();
 
-        SyncedBall theBall = (SyncedBall)target;
+        BallController theBall = (BallController)target;
         if (theBall != null)
         {
             if (GUILayout.Button("Reset Rigidbody Velocity"))
