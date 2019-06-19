@@ -5,9 +5,15 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
+    public int audioCountUp = 0;
+
+ 
+
+
     // Start is called before the first frame update
     void Start()
     {
+        
     }
 
     // Update is called once per frame
@@ -23,29 +29,48 @@ public class BallController : MonoBehaviour
 
             GameManager.instance.BallFallBeside();
 
-            FindObjectOfType<AudioManager>().Play("Ballhitground");
+            AudioManager.instance.Play("BallHitGround");
         }
 
         else if (other.gameObject.tag.Equals("Wall"))
         {
             GameManager.instance.BallFallBeside();
 
-            FindObjectOfType<AudioManager>().Play("Ballhitwall");
+            AudioManager.instance.Play("BallHitWall");
         }
+
 
         else if (other.gameObject.tag.Equals("Table"))
         { 
             GameManager.instance.BallFallBeside();
+            
+            if (audioCountUp == 0)
+            {
+                AudioManager.instance.Play("BallHitTable1");
+                audioCountUp++;
+            }
+            
+            else if (audioCountUp == 1)
+            {
+                AudioManager.instance.Play("BallHitTable2");
+                audioCountUp++;
+            }
 
-            FindObjectOfType<AudioManager>().Play("Ballhittable");
+            else if (audioCountUp == 2)
+            {
+                AudioManager.instance.Play("BallHitTable3");
+                audioCountUp = 0;
+            }
 
         }
-        //we need a counter 
+        
         else if (other.gameObject.tag.Equals("Counter"))
         { 
             GameManager.instance.BallFallBeside();
 
-            FindObjectOfType<AudioManager>().Play("Ballhitcounter");
+            AudioManager.instance.Play("BallHitCounter");
+
+
 
         }
         
@@ -59,8 +84,10 @@ public class BallController : MonoBehaviour
             other.gameObject.GetComponentInParent<CupController>().DeactivateTheCup();
             GameManager.instance.BallFallInCup();
 
-            FindObjectOfType<AudioManager>().Play("Ballhitcup");
+        
+            AudioManager.instance.Play("BallHitCup");
 
+        
         }
     }
 
@@ -68,6 +95,6 @@ public class BallController : MonoBehaviour
     {
         BallManager.instance.BallIsGrabbed();
 
-        FindObjectOfType<AudioManager>().Play("Takeball");
+        AudioManager.instance.Play("TakeBall");
     }
 }

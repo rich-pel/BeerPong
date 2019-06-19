@@ -44,19 +44,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sounds:
-  - name: Ballhitcup
+  - name: BallHitCup
     clip: {fileID: 8300000, guid: f95ef17183df0b345a44078bf634216d, type: 3}
     volume: 0.8
     pitch: 1
     loop: 0
     source: {fileID: 0}
-  - name: Ballhittable
-    clip: {fileID: 8300000, guid: e2c97b4e154d31245993a570827d6b99, type: 3}
+  - name: BallHitTable1
+    clip: {fileID: 8300000, guid: aad5f66919b81ca47a4b77d8fb71605a, type: 3}
     volume: 0.36
     pitch: 1
     loop: 0
     source: {fileID: 0}
-  - name: Takeball
+  - name: TakeBall
     clip: {fileID: 8300000, guid: 0e9fa0bb27232f8448e0803fb16fb64a, type: 3}
     volume: 0.54
     pitch: 2.07
@@ -71,23 +71,35 @@ MonoBehaviour:
   - name: Background Theme
     clip: {fileID: 8300000, guid: b71a49a29d45d974e8b8d3141839a7b6, type: 3}
     volume: 0.77
-    pitch: 0.53
+    pitch: 1.27
     loop: 1
     source: {fileID: 0}
-  - name: Ballhitwall
+  - name: BallHitWall
     clip: {fileID: 8300000, guid: f9c2017904a443b4e93b839a8e9736a9, type: 3}
     volume: 0.77
     pitch: 1.23
     loop: 0
     source: {fileID: 0}
-  - name: Ballhitcounter
+  - name: BallHitCounter
     clip: {fileID: 8300000, guid: db52cff0bb87a3e4993002c678a91b6d, type: 3}
     volume: 0.77
     pitch: 1.23
     loop: 0
     source: {fileID: 0}
-  - name: Ballhitground
+  - name: BallHitGround
     clip: {fileID: 8300000, guid: 06a51d138cd41864c9544b42275db3bc, type: 3}
+    volume: 0.77
+    pitch: 1.23
+    loop: 0
+    source: {fileID: 0}
+  - name: BallHitTable2
+    clip: {fileID: 8300000, guid: a77ba3379cf62734e8acc98a8ab06e9d, type: 3}
+    volume: 0.77
+    pitch: 1.23
+    loop: 0
+    source: {fileID: 0}
+  - name: BallHitTable3
+    clip: {fileID: 8300000, guid: b5c0dae8398ccef498827dfe40e5ebe6, type: 3}
     volume: 0.77
     pitch: 1.23
     loop: 0
