@@ -21,16 +21,16 @@ public class BallController : MonoBehaviour
         if (other.gameObject.tag.Equals("Ground") || other.gameObject.tag.Equals("Wall") ||
             other.gameObject.tag.Equals("Table"))
         {
-            GameManager.instance.BallFallBeside();
+            GameManager.instance.BallFellBeside();
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag.Equals("CupHitArea"))
+        if (other.gameObject.tag.Equals("Cup"))
         {
             other.gameObject.GetComponentInParent<CupController>().DeactivateTheCup();
-            GameManager.instance.BallFallInCup();
+            GameManager.instance.BallFellInCup();
         }
     }
 

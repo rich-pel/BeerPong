@@ -9,18 +9,6 @@ public class BallManager : MonoBehaviour
 
     public static BallManager instance;
 
-    public GameObject throwableBall;
-
-    public GameObject playersBallHolderArea;
-
-    public GameObject enemysBallHolderArea;
-
-    public int moveableTimeForBall = 10;
-
-    private float timeOutForBall;
-    private bool ballTimeIsTracked = false;
-    
-    
     private void Awake()
     {
         instance = this;
@@ -28,9 +16,21 @@ public class BallManager : MonoBehaviour
 
     #endregion
 
+    public GameObject throwableBall;
+    public GameObject playersBallHolderArea;
+    public GameObject enemysBallHolderArea;
+    public int moveableTimeForBall = 10;
+
+    private float timeOutForBall;
+    private bool ballTimeIsTracked = false;
+    
+    
+
     // Start is called before the first frame update
     void Start()
     {
+        // deactivate whole script if we're not server
+        gameObject.SetActive(GameManager.instance.IsServer());
     }
 
     // Update is called once per frame
@@ -39,19 +39,19 @@ public class BallManager : MonoBehaviour
         if (ballTimeIsTracked && timeOutForBall < Time.time)
         {
             ballTimeIsTracked = !ballTimeIsTracked;
-            GameManager.instance.BallFallBeside();
+            GameManager.instance.BallFellBeside();
         }
     }
 
-    public void SetPositionToBallHolder(bool enemysTurn)
+    public void SetPositionToBallHolder(bool myTurn)
     {
-        if (enemysTurn)
+        if (myTurn)
         {
-            throwableBall.transform.position = enemysBallHolderArea.transform.position;
+            throwableBall.transform.position = playersBallHolderArea.transform.position;
         }
         else
         {
-            throwableBall.transform.position = playersBallHolderArea.transform.position;
+            throwableBall.transform.position = enemysBallHolderArea.transform.position;
         }
     }
 
@@ -63,7 +63,7 @@ public class BallManager : MonoBehaviour
         timeOutForBall = Time.time + 10;
     }
 
-    public float getCurrentTimeLeft()
+    public float GetCurrentTimeLeft()
     {
         if (ballTimeIsTracked)
             return timeOutForBall - Time.time;
