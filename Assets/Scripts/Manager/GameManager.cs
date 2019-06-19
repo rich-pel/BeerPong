@@ -5,6 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
+
 public class GameManager : MonoBehaviour
 {
     #region Singleton
@@ -24,9 +25,12 @@ public class GameManager : MonoBehaviour
     private int enemyPoints = 0;
     private float playedTime;
 
+  
+
     // Start is called before the first frame update
     void Start()
     {
+    	
     }
 
     // Update is called once per frame
@@ -72,11 +76,13 @@ public class GameManager : MonoBehaviour
     public int GetPlayerPoints()
     {
         return playerPoints;
+        
     }
     public int GetEnemyPoints()
     {
         return enemyPoints;
-    }
+    	
+	}
 
     public float getCurrentPlayedTime()
     {
