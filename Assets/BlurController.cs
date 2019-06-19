@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 // using time
 
 //behaviour which should lie on the same gameobject as the main camera
@@ -7,21 +8,36 @@ public class BlurController : MonoBehaviour {
     [SerializeField]
     private Material postprocessMaterial;
 
+    [SerializeField] 
+    private GameManager gm;
     
     // sine function parameters
-    private float amp;
-
-    private float time;
-    // sine output parameters
-
-    
+    //[SerializeField] [Range(0.0001f, 0.1f)] 
+    public float speed = 0.1f;
+    public float maxBlur = 0.5f;
+    public float blurSize;
     
     void Update()
-    {
-        // calculate sine function 
+    {        
+        // TODO: Becher getrunken /10 
+        // blurSize = gm.gegner.punkte / 10;
+        // GameManager.instance.GetEnemyPoints() / GameManager.instance.GetMaxPoints();
         
+        
+        // calculate sine function 
+        blurSize = maxBlur * Mathf.Sin(Time.time * speed);
+
+        Debug.Log("blurSize: " + blurSize);
+        
+
         // change Material to sine output
-        Debug.Log("nix");
+        postprocessMaterial.SetFloat("_BlurSize", Math.Abs(blurSize));
+        // Blur direction
+        // postprocessMaterial.SetPass(blurSize < 0 ? 0 : 1);
+
+        // var debuf = postprocessMaterial.GetFloat("_BlurSize");
+        // Debug.Log("sine: " + y +  " mat:" + debuf);
+        
     }
     
     
@@ -31,9 +47,6 @@ public class BlurController : MonoBehaviour {
     // method which is automatically called by unity after the camera is done rendering
     void OnRenderImage(RenderTexture source, RenderTexture destination){
         //draws the pixels from the source texture to the destination texture
-        // var temporaryTexture = RenderTexture.GetTemporary(source.width, source.height);
         Graphics.Blit(source, destination, postprocessMaterial, 0);
-        // Graphics.Blit(temporaryTexture, destination, postprocessMaterial, 1);
-        // RenderTexture.ReleaseTemporary(temporaryTexture);
     }
 }
