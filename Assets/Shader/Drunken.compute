@@ -1,0 +1,43 @@
+﻿// source: https://en.wikibooks.org/wiki/Cg_Programming/Unity/Computing_Image_Effects
+
+
+// define the function
+#pragma kernel TintMain 
+
+// uniform variable that is set in a script
+float4 Color; 
+
+ // It is similar to sampler2D Source in a fragment shader but without interpolatin
+Texture2D<float4> Source;
+// read from and write to Texture2D
+// A compute shader can write to any position in a RWTexture2D, 
+// while a fragment shader can usually write only to the position of its fragment.
+// Multiple threads might write to the same location in unefined order, unless its not difined
+RWTexture2D<float4> Destination;
+
+
+// This is a special line for compute shaders, which defines the dimensions of a thread group.
+// A thread group is a group of calls to the compute shader function that are executed in parallel and, 
+// therefore, their execution can be synchronized ( with GroupMemoryBarrierWithGroupSync() ) 
+// Groups may share some particulary fast "groupshared" memorywhile the memory that may be shared by 
+// threads in different groups is usually slower.
+
+// The threads are organized in a 3D array of thread groups and each thread group is itself a 3D array 
+// with the three dimensions specified by the three arguments of numthreads. 
+// For image processing tasks, the third (z) dimension is usually 1 as in our example [numthreads(8,8,1)]. 
+// The dimensions (8,8,1) specify that each thread group consists of 8 × 8 × 1 = 64 threads. 
+// There are certain platform-specific limitations
+
+[numthreads(8,8,1)]
+void TintMain (uint3 groupID : SV_GroupID, 
+      // ID of thread group; range depends on Dispatch call
+   uint3 groupThreadID : SV_GroupThreadID, 
+      // ID of thread in a thread group; range depends on numthreads
+   uint groupIndex : SV_GroupIndex, 
+      // flattened/linearized GroupThreadID between 0 and 
+      // numthreads.x * numthreads.y * numthreadz.z - 1 
+   uint3 id : SV_DispatchThreadID) 
+      // = GroupID * numthreads + GroupThreadID
+{
+   Destination[id.xy] = Source[id.xy] * Color;
+}

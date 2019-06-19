@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     private int playerPoints = 0;
     private int enemyPoints = 0;
     private float playedTime;
+    [SerializeField] private int MaxPoints = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -35,7 +36,6 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             SwitchBallPosition(enemysTurn);
-            
         }
 
         playedTime = playedTime + Time.deltaTime;
@@ -83,4 +83,8 @@ public class GameManager : MonoBehaviour
         return playedTime;
     }
 
+    public int GetMaxPoints()
+    {
+        return MaxPoints;
+    }
 }
