@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using BeardedManStudios.Forge.Networking.Unity;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class BallManager : MonoBehaviour
 {
@@ -16,14 +14,13 @@ public class BallManager : MonoBehaviour
 
     #endregion
 
-    public GameObject throwableBall;
+    public BallController throwableBall;
     public GameObject playersBallHolderArea;
     public GameObject enemysBallHolderArea;
     public int moveableTimeForBall = 10;
 
     private float timeOutForBall;
     private bool ballTimeIsTracked = false;
-    
     
 
     // Start is called before the first frame update
@@ -43,6 +40,7 @@ public class BallManager : MonoBehaviour
         }
     }
 
+    // Should only be called by the Server!
     public void SetPositionToBallHolder(bool myTurn)
     {
         if (myTurn)
@@ -52,6 +50,15 @@ public class BallManager : MonoBehaviour
         else
         {
             throwableBall.transform.position = enemysBallHolderArea.transform.position;
+        }
+
+        // must be done before changing ownership!
+        // TODO: doesn't seem to work as intended
+        throwableBall.UpdateNetworkPosition();
+
+        if (throwableBall.networkObject != null && NetworkManager.Instance.Networker.Players.Count >= 2)
+        {
+            throwableBall.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[myTurn ? 0 : 1]);
         }
     }
 

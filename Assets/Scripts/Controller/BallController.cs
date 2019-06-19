@@ -27,6 +27,11 @@ public class BallController : SyncedBallBehavior
         if (networkObject == null) return;
 
         //Debug.Log("Doing Networking 'n stuff");
+        UpdateNetworkPosition();
+    }
+
+    public void UpdateNetworkPosition()
+    {
         if (networkObject.IsOwner)
         {
             networkObject.position = transform.position;

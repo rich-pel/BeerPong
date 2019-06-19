@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8d177df33725b449a1e40cc41b66639, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  throwableBall: {fileID: 45901858}
+  throwableBall: {fileID: 1292230497}
   playersBallHolderArea: {fileID: 3768409162330719650}
   enemysBallHolderArea: {fileID: 1962699595}
   moveableTimeForBall: 10
@@ -250,12 +250,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxPoints: 10
---- !u!1 &45901858 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2934705422851593145, guid: 3064428cf34e3c0479f423d7d3eb57a0,
-    type: 3}
-  m_PrefabInstance: {fileID: 1292230496}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &78817769
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1320,6 +1314,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3064428cf34e3c0479f423d7d3eb57a0, type: 3}
+--- !u!114 &1292230497 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -209293223505327733, guid: 3064428cf34e3c0479f423d7d3eb57a0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1292230496}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94559f5a8dfcbcc44b316da6ef49fab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1339156668
 PrefabInstance:
   m_ObjectHideFlags: 0

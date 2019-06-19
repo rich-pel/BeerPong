@@ -25,6 +25,7 @@ public class GameManager : GameManagerBehavior
     {
         if (networkObject.IsServer)
         {
+            myTurn = true; // host always starts
             networkObject.hostPoints = 0;
             networkObject.clientPoints = 0;
             networkObject.playedTime = 0;
@@ -46,14 +47,14 @@ public class GameManager : GameManagerBehavior
         if (!bInit)
         {
             Init();
-            bInit = false;
+            bInit = true;
         }
 
         if (networkObject.IsServer)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                PlayerTurn(myTurn);
+                SetTurn(!myTurn);
             }
 
             networkObject.playedTime += Time.deltaTime;
@@ -86,25 +87,30 @@ public class GameManager : GameManagerBehavior
             networkObject.clientPoints++;
         }
 
-        PlayerTurn(!myTurn);
+        SetTurn(!myTurn);
     }
 
     public void BallFellBeside()
     {
         //no counting for the points
-        PlayerTurn(!myTurn);
+        SetTurn(!myTurn);
     }
 
-    private void PlayerTurn(bool turn)
+    private void SetTurn(bool IamNext)
     {
-        BallManager.instance.SetPositionToBallHolder(turn);
-        myTurn = turn;
+        myTurn = IamNext;
+        if (networkObject.IsServer)
+        {
+            BallManager.instance.SetPositionToBallHolder(myTurn);
+        }
 
-        // inform client about turn change
         if (networkObject != null)
         {
-            networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, myTurn);
+            // Inform everyone about turn change
+            networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
         }
+
+        // TODO: Show the player some indication it's his turn!
     }
 
     public int GetPlayerPoints()
@@ -126,28 +132,20 @@ public class GameManager : GameManagerBehavior
         return networkObject != null ? networkObject.MaxPoints : 0;
     }
 
-    bool RPCAuthorityCheck()
-    {
-        if (networkObject.IsServer)
-        {
-            Debug.LogWarning("Some Client tried to call an RPC method on us... how bold!");
-            return false;
-        }
-        return true;
-    }
-
     // RPC, do not call directly!
     public override void PlayerTurn(RpcArgs args)
     {
-        if (!RPCAuthorityCheck()) return;
+        if (networkObject.IsServer) return;
 
-        myTurn = !args.GetNext<bool>();
+        myTurn = args.GetNext<bool>();
+
+        // TODO: Show the player some indication it's his turn!
     }
 
     // RPC, do not call directly!
     public override void GameOver(RpcArgs args)
     {
-        if (!RPCAuthorityCheck()) return;
+        if (networkObject.IsServer) return;
 
         // TODO: Show some end screen etc...
         throw new System.NotImplementedException();
