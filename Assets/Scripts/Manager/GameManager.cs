@@ -192,4 +192,10 @@ public class GameManager : GameManagerBehavior
     {
         currentTry++;
     }
+
+    public void StartRound()
+    {
+        CupManager.instance.SetAllCupsActive();
+    }
+    
 }

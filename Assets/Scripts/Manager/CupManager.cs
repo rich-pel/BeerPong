@@ -60,4 +60,12 @@ public class CupManager : MonoBehaviour
         int activeCups = cupBundle.GetNumberOfActiveCups();
         throw new NotImplementedException();
     }
+
+    public void SetAllCupsActive()
+    {
+        playersCupBundle.ActivateAllCups();
+        enemysCupBundle.ActivateAllCups();
+    }
+
+   
 }

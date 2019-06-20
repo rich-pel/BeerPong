@@ -49,4 +49,12 @@ public class CupBundleController : MonoBehaviour
         
         return cupsActive;
     }
+
+    public void ActivateAllCups()
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            cup.ActivateTheCup();
+        }
+    }
 }
