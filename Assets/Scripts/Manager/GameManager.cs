@@ -20,6 +20,9 @@ public class GameManager : GameManagerBehavior
     [SerializeField] private int MaxPoints = 10;
     private bool bInit = false;
 
+    [SerializeField] private int maxTries = 3;
+    private int currentTry = 0;
+
     // Start is called before the first frame update
     void Init()
     {
@@ -36,12 +39,20 @@ public class GameManager : GameManagerBehavior
     // Update is called once per frame
     void Update()
     {
+
+        if (currentTry >= maxTries && !BallManager.instance.BallIsInAction())
+        {
+            switchTurn();
+        }
+        
         // If unity's Update() runs, before the object is
         // instantiated in the network, then simply don't
         // continue, otherwise a bug/error will happen.
         // 
         // Unity's Update() running, before this object is instantiated
         // on the network is **very** rare, but better be safe 100%
+
+
         if (networkObject == null) return;
 
         if (!bInit)
@@ -54,11 +65,34 @@ public class GameManager : GameManagerBehavior
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                SetTurn(!myTurn);
+                SetTurn(!checkIsMyTurn());
+            }
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Space Hit: " + currentTry);
+                BallManager.instance.SetPositionToBallHolder(checkIsMyTurn());
+                currentTry++; 
             }
 
             networkObject.playedTime += Time.deltaTime;
         }
+        
+        
+    }
+
+    private void switchTurn()
+    {
+        myTurn = !myTurn;
+        BallManager.instance.SetPositionToBallHolder(checkIsMyTurn());
+        currentTry = 0;
+        
+
+    }
+
+    private bool checkIsMyTurn()
+    {
+        return currentTry < maxTries;
     }
 
     public bool IsServer()
@@ -66,7 +100,7 @@ public class GameManager : GameManagerBehavior
         return networkObject != null ? networkObject.IsServer : false;
     }
 
-    public void BallFellInCup()
+    public void BallFellInCup(int cupPosition)
     {
         if (networkObject == null) return;
 
@@ -77,8 +111,10 @@ public class GameManager : GameManagerBehavior
         //Ball muss position wechseln
         Debug.Log("In Ball Fell In Cup");
 
+        CupManager.instance.DeactivateACoupInAGroup(cupPosition, checkIsMyTurn());
+        
         //Here has also to happend the update for the points and so on...
-        if (myTurn)
+        if (checkIsMyTurn())
         {
             networkObject.hostPoints++;
         }
@@ -87,27 +123,27 @@ public class GameManager : GameManagerBehavior
             networkObject.clientPoints++;
         }
 
-        SetTurn(!myTurn);
+        SetTurn(!checkIsMyTurn());
     }
 
     public void BallFellBeside()
     {
         //no counting for the points
-        SetTurn(!myTurn);
+        SetTurn(!checkIsMyTurn());
     }
 
     private void SetTurn(bool IamNext)
     {
-        myTurn = IamNext;
+//        myTurn = IamNext;
         if (networkObject.IsServer)
         {
-            BallManager.instance.SetPositionToBallHolder(myTurn);
+            BallManager.instance.SetPositionToBallHolder(checkIsMyTurn());
         }
 
         if (networkObject != null)
         {
             // Inform everyone about turn change
-            networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
+            networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !checkIsMyTurn());
         }
 
         // TODO: Show the player some indication it's his turn!
@@ -117,6 +153,7 @@ public class GameManager : GameManagerBehavior
     {
         return networkObject != null ? networkObject.clientPoints : 0;
     }
+
     public int GetEnemyPoints()
     {
         return networkObject != null ? networkObject.hostPoints : 0;
@@ -149,5 +186,10 @@ public class GameManager : GameManagerBehavior
 
         // TODO: Show some end screen etc...
         throw new System.NotImplementedException();
+    }
+
+    public void BallWasGrabbed()
+    {
+        currentTry++;
     }
 }

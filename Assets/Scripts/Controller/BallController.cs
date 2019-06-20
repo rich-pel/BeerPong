@@ -5,7 +5,6 @@ using UnityEngine;
 [RequireComponent(typeof(Throwable))]
 public class BallController : SyncedBallBehavior
 {
-    public int audioCountUp = 0;
     Throwable throwable;
 
     // Start is called before the first frame update
@@ -46,56 +45,15 @@ public class BallController : SyncedBallBehavior
 
     private void OnCollisionEnter(Collision other)
     {
-        //Maybe just if the collision enter the ballFallBeside
-        if (other.gameObject.tag.Equals("Ground"))
-        {
-            GameManager.instance.BallFellBeside();
-            AudioManager.instance.Play("BallHitGround");
-        }
-
-        else if (other.gameObject.tag.Equals("Wall"))
-        {
-            GameManager.instance.BallFellBeside();
-
-            AudioManager.instance.Play("BallHitWall");
-        }
-
-        else if (other.gameObject.tag.Equals("Table"))
-        {
-            GameManager.instance.BallFellBeside();
-
-            if (audioCountUp == 0)
-            {
-                AudioManager.instance.Play("BallHitTable1");
-                audioCountUp++;
-            }
-
-            else if (audioCountUp == 1)
-            {
-                AudioManager.instance.Play("BallHitTable2");
-                audioCountUp++;
-            }
-
-            else if (audioCountUp == 2)
-            {
-                AudioManager.instance.Play("BallHitTable3");
-                audioCountUp = 0;
-            }
-        }
-
-        else if (other.gameObject.tag.Equals("Counter"))
-        {
-            GameManager.instance.BallFellBeside();
-            AudioManager.instance.Play("BallHitCounter");
-        }
+        BallManager.instance.BallInteracted(other.gameObject.tag);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag.Equals("Cup"))
         {
-            other.gameObject.GetComponentInParent<CupController>().DeactivateTheCup();
-            GameManager.instance.BallFellInCup();
+            GameManager.instance.BallFellInCup(other.gameObject.GetComponentInParent<CupController>()
+                .GetCupPositionInGroup());
             AudioManager.instance.Play("BallHitCup");
         }
     }

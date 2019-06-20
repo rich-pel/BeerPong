@@ -14,14 +14,17 @@ public class BallManager : MonoBehaviour
 
     #endregion
 
-    public BallController throwableBall;
+    [SerializeField] private BallController throwableBall;
     public GameObject playersBallHolderArea;
     public GameObject enemysBallHolderArea;
     public int moveableTimeForBall = 10;
 
     private float timeOutForBall;
     private bool ballTimeIsTracked = false;
-    
+
+    private int audioCountUp = 0;
+    [SerializeField] private int ballDippingMax = 3;
+
 
     // Start is called before the first frame update
     void Start()
@@ -33,7 +36,7 @@ public class BallManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (ballTimeIsTracked && timeOutForBall < Time.time)
+        if (BallIsInAction())
         {
             ballTimeIsTracked = !ballTimeIsTracked;
             GameManager.instance.BallFellBeside();
@@ -68,6 +71,7 @@ public class BallManager : MonoBehaviour
         Debug.Log("Ball is Grabbed");
         ballTimeIsTracked = true;
         timeOutForBall = Time.time + 10;
+        GameManager.instance.BallWasGrabbed();
     }
 
     public float GetCurrentTimeLeft()
@@ -76,5 +80,46 @@ public class BallManager : MonoBehaviour
             return timeOutForBall - Time.time;
         else
             return moveableTimeForBall;
+    }
+
+    public void BallInteracted(string gameObjectTag)
+    {
+        //Maybe here use the tag names also for the audio files -> just for performance
+        //AudioManager.instance.Play(gameObjectTag)
+        
+        //Maybe just if the collision enter the ballFallBeside
+        if (gameObjectTag.Equals("Ground"))
+        {
+            GameManager.instance.BallFellBeside();
+            AudioManager.instance.Play("BallHitGround");
+        }
+
+        else if (gameObjectTag.Equals("Wall"))
+        {
+            GameManager.instance.BallFellBeside();
+
+            AudioManager.instance.Play("BallHitWall");
+        }
+
+        else if (gameObjectTag.Equals("Table"))
+        {
+            GameManager.instance.BallFellBeside();
+
+            audioCountUp++;
+            AudioManager.instance.Play("BallHitTable" + audioCountUp);
+            if (audioCountUp >= ballDippingMax)
+                audioCountUp = 0;
+        }
+
+        else if (gameObjectTag.Equals("Counter"))
+        {
+            GameManager.instance.BallFellBeside();
+            AudioManager.instance.Play("BallHitCounter");
+        }
+    }
+
+    public bool BallIsInAction()
+    {
+        return ballTimeIsTracked && timeOutForBall < Time.time;
     }
 }
