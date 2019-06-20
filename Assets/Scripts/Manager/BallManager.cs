@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using BeardedManStudios.Forge.Networking.Unity;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class BallManager : MonoBehaviour
 {
@@ -9,18 +7,6 @@ public class BallManager : MonoBehaviour
 
     public static BallManager instance;
 
-    public GameObject throwableBall;
-
-    public GameObject playersBallHolderArea;
-
-    public GameObject enemysBallHolderArea;
-
-    public int moveableTimeForBall = 10;
-
-    private float timeOutForBall;
-    private bool ballTimeIsTracked = false;
-    
-    
     private void Awake()
     {
         instance = this;
@@ -28,30 +14,54 @@ public class BallManager : MonoBehaviour
 
     #endregion
 
+    [SerializeField] private BallController throwableBall;
+    public GameObject playersBallHolderArea;
+    public GameObject enemysBallHolderArea;
+    public int moveableTimeForBall = 10;
+
+    private float timeOutForBall;
+    private bool ballTimeIsTracked = false;
+
+    private int audioCountUp = 0;
+    [SerializeField] private int ballDippingMax = 3;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        // deactivate whole script if we're not server
+        gameObject.SetActive(GameManager.instance.IsServer());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (ballTimeIsTracked && timeOutForBall < Time.time)
+        if (BallIsInAction())
         {
             ballTimeIsTracked = !ballTimeIsTracked;
-            GameManager.instance.BallFallBeside();
+            GameManager.instance.BallFellBeside();
         }
     }
 
-    public void SetPositionToBallHolder(bool enemysTurn)
+    // Should only be called by the Server!
+    public void SetPositionToBallHolder(bool myTurn)
     {
-        if (enemysTurn)
+        if (myTurn)
         {
-            throwableBall.transform.position = enemysBallHolderArea.transform.position;
+            throwableBall.transform.position = playersBallHolderArea.transform.position;
         }
         else
         {
-            throwableBall.transform.position = playersBallHolderArea.transform.position;
+            throwableBall.transform.position = enemysBallHolderArea.transform.position;
+        }
+
+        // must be done before changing ownership!
+        // TODO: doesn't seem to work as intended
+        throwableBall.UpdateNetworkPosition();
+
+        if (throwableBall.networkObject != null && NetworkManager.Instance.Networker.Players.Count >= 2)
+        {
+            throwableBall.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[myTurn ? 0 : 1]);
         }
     }
 
@@ -61,13 +71,55 @@ public class BallManager : MonoBehaviour
         Debug.Log("Ball is Grabbed");
         ballTimeIsTracked = true;
         timeOutForBall = Time.time + 10;
+        GameManager.instance.BallWasGrabbed();
     }
 
-    public float getCurrentTimeLeft()
+    public float GetCurrentTimeLeft()
     {
         if (ballTimeIsTracked)
             return timeOutForBall - Time.time;
         else
             return moveableTimeForBall;
+    }
+
+    public void BallInteracted(string gameObjectTag)
+    {
+        //Maybe here use the tag names also for the audio files -> just for performance
+        //AudioManager.instance.Play(gameObjectTag)
+        
+        //Maybe just if the collision enter the ballFallBeside
+        if (gameObjectTag.Equals("Ground"))
+        {
+            GameManager.instance.BallFellBeside();
+            AudioManager.instance.Play("BallHitGround");
+        }
+
+        else if (gameObjectTag.Equals("Wall"))
+        {
+            GameManager.instance.BallFellBeside();
+
+            AudioManager.instance.Play("BallHitWall");
+        }
+
+        else if (gameObjectTag.Equals("Table"))
+        {
+            GameManager.instance.BallFellBeside();
+
+            audioCountUp++;
+            AudioManager.instance.Play("BallHitTable" + audioCountUp);
+            if (audioCountUp >= ballDippingMax)
+                audioCountUp = 0;
+        }
+
+        else if (gameObjectTag.Equals("Counter"))
+        {
+            GameManager.instance.BallFellBeside();
+            AudioManager.instance.Play("BallHitCounter");
+        }
+    }
+
+    public bool BallIsInAction()
+    {
+        return ballTimeIsTracked && timeOutForBall < Time.time;
     }
 }
