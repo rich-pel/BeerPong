@@ -36,9 +36,15 @@ public class BlurController : MonoBehaviour {
         //postprocessMaterial.SetPass(blurSize < 0 ? 0 : 1);
         //postprocessMaterial.SetPass();
 
+        //if (blurSize < 0)
+        //    postprocessMaterial.SetFloat("_Aspect", 0);
+        //else
+        //    postprocessMaterial.SetFloat("_Aspect", 1);
+
+
         // var debuf = postprocessMaterial.GetFloat("_BlurSize");
         // Debug.Log("sine: " + y +  " mat:" + debuf);
-        
+
     }
     
     
@@ -50,4 +56,6 @@ public class BlurController : MonoBehaviour {
         //draws the pixels from the source texture to the destination texture
         Graphics.Blit(source, destination, postprocessMaterial, 0);
     }
+
+
 }

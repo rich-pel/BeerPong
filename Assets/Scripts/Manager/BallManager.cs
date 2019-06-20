@@ -24,6 +24,7 @@ public class BallManager : MonoBehaviour
 
     private int audioCountUp = 0;
     [SerializeField] private int ballDippingMax = 3;
+    private Rigidbody ballBody;
 
 
     // Start is called before the first frame update
@@ -31,6 +32,7 @@ public class BallManager : MonoBehaviour
     {
         // deactivate whole script if we're not server
         gameObject.SetActive(GameManager.instance.IsServer());
+        ballBody = throwableBall.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -49,10 +51,16 @@ public class BallManager : MonoBehaviour
         if (myTurn)
         {
             throwableBall.transform.position = playersBallHolderArea.transform.position;
+            ballBody.velocity = Vector3.zero;
+            ballBody.angularVelocity = Vector3.zero;
+            Debug.Log("I have the Ball");
         }
         else
         {
             throwableBall.transform.position = enemysBallHolderArea.transform.position;
+            ballBody.velocity = Vector3.zero;
+            ballBody.angularVelocity = Vector3.zero;
+            Debug.Log("The enemy has the Ball");
         }
 
         // must be done before changing ownership!

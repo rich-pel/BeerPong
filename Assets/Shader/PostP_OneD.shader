@@ -5,7 +5,7 @@
 		[HideInInspector] _MainTex ("Texture", 2D) = "white" {}
 		_BlurSize("Blur Size", Range(0,0.5)) = 0
    //    [KeywordEnum(Vertical, Horizontal)] _Direction ("Direction", Float) = 0
-        [Toggle(ASPCET)] _Aspect ("invAspect", float) = 0
+        [Toggle(ASPECT)] _Aspect ("invAspect", float) = 0
 	}
 
 	SubShader{
@@ -27,7 +27,7 @@
 			#pragma fragment frag
 
             // #pragma multi_compile _DIRECTION_VERTICAL _DIRECTION_HORIZONTAL
-            #pragma shader_feature ASPCET 
+            #pragma shader_feature ASPECT 
             
 			// texture and transforms of the texture
 			sampler2D _MainTex;
