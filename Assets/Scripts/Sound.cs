@@ -1,6 +1,7 @@
 ﻿using UnityEngine.Audio;
 using UnityEngine;
 
+//costum class should appear in inspector 
 [System.Serializable]
 
 public class Sound  
@@ -17,6 +18,7 @@ public class Sound
 
  public bool loop;
 
+// variable sound to work with in audiomanager script, do not need to see it
  [HideInInspector]
  public AudioSource source;
 }
