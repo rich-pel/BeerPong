@@ -15,13 +15,13 @@ public class CounterText : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerPointstext.text = "Your points: + playerPoints.ToString()";
-		enemyPointstext.text = "Enemys points: + enemyPoints.ToString()";    
+            
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        playerPointstext.text = "Your points: "+ GameManager.instance.GetPlayerPoints();
+		enemyPointstext.text = "Enemys points: "+ GameManager.instance.GetEnemyPoints();
     }
 }
