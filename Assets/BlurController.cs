@@ -13,8 +13,8 @@ public class BlurController : MonoBehaviour {
     
     // sine function parameters
     //[SerializeField] [Range(0.0001f, 0.1f)] 
-    public float speed = 0.1f;
-    public float maxBlur = 0.5f;
+    public float speed = 0.5f;
+    public float maxBlur = 0.05f;
     public float blurSize;
     
     void Update()
@@ -27,13 +27,14 @@ public class BlurController : MonoBehaviour {
         // calculate sine function 
         blurSize = maxBlur * Mathf.Sin(Time.time * speed);
 
-        Debug.Log("blurSize: " + blurSize);
+       // Debug.Log("blurSize: " + blurSize);
         
 
         // change Material to sine output
         postprocessMaterial.SetFloat("_BlurSize", Math.Abs(blurSize));
         // Blur direction
-        // postprocessMaterial.SetPass(blurSize < 0 ? 0 : 1);
+        //postprocessMaterial.SetPass(blurSize < 0 ? 0 : 1);
+        //postprocessMaterial.SetPass();
 
         // var debuf = postprocessMaterial.GetFloat("_BlurSize");
         // Debug.Log("sine: " + y +  " mat:" + debuf);

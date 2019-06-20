@@ -4,7 +4,7 @@
 	Properties{
 		[HideInInspector] _MainTex ("Texture", 2D) = "white" {}
 		_BlurSize("Blur Size", Range(0,0.5)) = 0
- //     [KeywordEnum(Vertical, Horizontal)] _Direction ("Direction", Float) = 0
+   //    [KeywordEnum(Vertical, Horizontal)] _Direction ("Direction", Float) = 0
         [Toggle(ASPCET)] _Aspect ("invAspect", float) = 0
 	}
 
@@ -15,6 +15,7 @@
 		ZWrite Off 
 		ZTest Always
 
+		// Vertical
 		Pass{
 
 			CGPROGRAM
@@ -25,7 +26,7 @@
 			#pragma vertex vert
 			#pragma fragment frag
 
-//          #pragma multi_compile _DIRECTION_VERTICAL _DIRECTION_HORIZONTAL
+            // #pragma multi_compile _DIRECTION_VERTICAL _DIRECTION_HORIZONTAL
             #pragma shader_feature ASPCET 
             
 			// texture and transforms of the texture
@@ -33,14 +34,9 @@
 			float _BlurSize;
 
             // [10 100]
-			#define SAMPLES 10
+			#define SAMPLES 3
 			
- //       #if _DIRECTION_VERTICAL
- //           #define ASPCET 0
- //       #else
- //           #define ASPCET 1
- //       #endif
-        
+               
 			//the object data that's put into the vertex shader
 			struct appdata{
 				float4 vertex : POSITION;
@@ -79,11 +75,12 @@
 				//get the offset of the sample
 				#if ASPECT
                     float offset = (index/(SAMPLES-1) - 0.5) * _BlurSize;
+					float2 uv = i.uv + float2(offset, 0);
 				#else
 					float offset = (index/(SAMPLES-1) - 0.5) * _BlurSize * invAspect;
+					float2 uv = i.uv + float2(0, offset);
 				#endif
 					//get uv coordinate of sample
-					float2 uv = i.uv + float2(0, offset);
 					//simply add the color if we don't have a gaussian blur (box)
 					col += tex2D(_MainTex, uv);
 				}

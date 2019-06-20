@@ -68,7 +68,7 @@ public class GameManager : GameManagerBehavior
 
     public void BallFellInCup()
     {
-        if (networkObject == null) return;
+        if (networkObject == null || !networkObject.IsServer) return;
 
         //Zugehörige Gruppe
         //Aktueller Becher
@@ -92,23 +92,20 @@ public class GameManager : GameManagerBehavior
 
     public void BallFellBeside()
     {
+        if (networkObject == null || !networkObject.IsServer) return;
+
         //no counting for the points
         SetTurn(!myTurn);
     }
 
     private void SetTurn(bool IamNext)
     {
-        myTurn = IamNext;
-        if (networkObject.IsServer)
-        {
-            BallManager.instance.SetPositionToBallHolder(myTurn);
-        }
+        if (networkObject == null || !networkObject.IsServer) return;
 
-        if (networkObject != null)
-        {
-            // Inform everyone about turn change
-            networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
-        }
+        myTurn = IamNext;
+        BallManager.instance.SetPositionToBallHolder(myTurn);
+
+        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
 
         // TODO: Show the player some indication it's his turn!
     }

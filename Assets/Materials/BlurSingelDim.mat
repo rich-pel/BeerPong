@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: BlurSingelDim
   m_Shader: {fileID: 4800000, guid: 69412ed6019695849be74de317d8b2cc, type: 3}
-  m_ShaderKeywords: _DIRECTION_VERTICAL _SAMPLES_LOW
+  m_ShaderKeywords: _DIRECTION_HORIZONTAL _SAMPLES_LOW
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -57,11 +57,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Aspect: 0
-    - _BlurSize: 0.3194074
+    - _BlurSize: 0.036128927
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Direction: 0
+    - _Direction: 1
     - _DstBlend: 0
     - _Gauss: 0
     - _GlossMapScale: 1
