@@ -1,11 +1,12 @@
 ﻿Shader "Richard/PostP_OneD_Blur"
 {
-   //show values to edit in inspector
+    //show values to edit in inspector
 	Properties{
 		[HideInInspector] _MainTex ("Texture", 2D) = "white" {}
-		_BlurSize("Blur Size", Range(0,0.5)) = 0
-   //    [KeywordEnum(Vertical, Horizontal)] _Direction ("Direction", Float) = 0
-        [Toggle(ASPCET)] _Aspect ("invAspect", float) = 0
+		_BlurSize("Blur Size", float) = 0
+		_Samples("Samples", float) = 0
+        // [Toggle(ASPECT)] _Aspect ("invAspect", float) = 0
+		[KeywordEnum(Vertical, Horizontal)] _Direction("Sample Direction", Float) = 0 // why Uppercase?
 	}
 
 	SubShader{
@@ -15,7 +16,6 @@
 		ZWrite Off 
 		ZTest Always
 
-		// Vertical
 		Pass{
 
 			CGPROGRAM
@@ -26,17 +26,19 @@
 			#pragma vertex vert
 			#pragma fragment frag
 
-            // #pragma multi_compile _DIRECTION_VERTICAL _DIRECTION_HORIZONTAL
-            #pragma shader_feature ASPCET 
-            
+			#pragma multi_compile _DIRECTION_VERTICAL _DIRECTION_HORIZONTAL
+
 			// texture and transforms of the texture
 			sampler2D _MainTex;
 			float _BlurSize;
+			float _Samples;
 
-            // [10 100]
-			#define SAMPLES 3
-			
-               
+		#if _DIRECTION_VERTICAL
+			#define DIRECTION 0
+		#else
+			#define DIRECTION 2
+		#endif
+
 			//the object data that's put into the vertex shader
 			struct appdata{
 				float4 vertex : POSITION;
@@ -67,17 +69,17 @@
 			
                 //init color variable
                 float4 col = 0;
-                float sum = SAMPLES;
+                float sum = _Samples;
 
 				//iterate over blur samples
-				for(float index = 0; index < SAMPLES; index++)
+				for(float index = 0; index < _Samples; index++)
 				{
 				//get the offset of the sample
-				#if ASPECT
-                    float offset = (index/(SAMPLES-1) - 0.5) * _BlurSize;
+				#if DIRECTION < 1
+                    float offset = (index/(_Samples-1) - 0.5) * _BlurSize;
 					float2 uv = i.uv + float2(offset, 0);
 				#else
-					float offset = (index/(SAMPLES-1) - 0.5) * _BlurSize * invAspect;
+					float offset = (index/(_Samples-1) - 0.5) * _BlurSize * invAspect;
 					float2 uv = i.uv + float2(0, offset);
 				#endif
 					//get uv coordinate of sample

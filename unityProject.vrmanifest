@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.newunityproject4.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "D:\\Workspace_Radtke\\BeerPong\\actions.json",
+      "action_manifest_path": "C:\\Users\\experiment\\Downloads\\BeerPong-table\\BeerPong-table\\actions.json",
       "strings": {
         "en_us": {
           "name": "New Unity Project (4) [Testing]"

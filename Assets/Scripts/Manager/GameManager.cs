@@ -57,29 +57,21 @@ public class GameManager : GameManagerBehavior
 
         if (networkObject.IsServer)
         {
-            if (currentTry >= maxTries && !BallManager.instance.BallIsInAction())
-            {
-                SetTurn(!checkIsMyTurn());
-                currentTry = 0;
-            }
+            //if (currentTry >= maxTries && !BallManager.instance.BallIsInAction())
+            //{
+            //    SetTurn(!checkIsMyTurn());
+            //    currentTry = 0;
+            //}
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Debug.Log("Space Hit: " + currentTry);
-                currentTry++; 
+                //currentTry++; 
+                SetTurn(!myTurn);
             }
 
             networkObject.playedTime += Time.deltaTime;
         }
-    }
-
-    private void switchTurn()
-    {
-        myTurn = !myTurn;
-        BallManager.instance.SetPositionToBallHolder(checkIsMyTurn());
-        currentTry = 0;
-        
-
     }
 
     private bool checkIsMyTurn()
@@ -115,8 +107,9 @@ public class GameManager : GameManagerBehavior
             networkObject.clientPoints++;
         }
 
-        currentTry++;
-        //SetTurn(!checkIsMyTurn());
+        //currentTry++;
+        //Debug.Log("Current Try No: " + currentTry);
+        SetTurn(!myTurn);
     }
 
     public void BallFellBeside()
@@ -124,8 +117,9 @@ public class GameManager : GameManagerBehavior
         if (networkObject == null || !networkObject.IsServer) return;
 
         //no counting for the points
-        //SetTurn(!checkIsMyTurn());
-        currentTry++;
+        SetTurn(!myTurn);
+        //currentTry++;
+        //Debug.Log("Current Try No: " + currentTry);
     }
 
     private void SetTurn(bool IamNext)
@@ -133,6 +127,8 @@ public class GameManager : GameManagerBehavior
         if (networkObject == null || !networkObject.IsServer) return;
 
         myTurn = IamNext;
+        Debug.Log("It's " + (myTurn ? "my Turn" : "the enemys Turn") + " Turn!");
+
         BallManager.instance.SetPositionToBallHolder(myTurn);
 
         networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
