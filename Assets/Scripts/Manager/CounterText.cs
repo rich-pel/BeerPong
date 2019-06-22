@@ -21,7 +21,7 @@ public class CounterText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerPointsText.text = "Your points: "+ GameManager.instance.GetPlayerPoints();
-		enemyPointsText.text = "Enemys points: "+ GameManager.instance.GetEnemyPoints();
+        playerPointsText.text = " "+ GameManager.instance.GetPlayerPoints();
+		enemyPointsText.text = " "+ GameManager.instance.GetEnemyPoints();
     }
 }
