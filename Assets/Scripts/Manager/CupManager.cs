@@ -17,10 +17,8 @@ public class CupManager : MonoBehaviour
 
     #endregion
 
-
     [SerializeField] private CupBundleController playersCupBundle;
     [SerializeField] private CupBundleController enemysCupBundle;
-
 
     // Start is called before the first frame update
     void Start()
@@ -32,40 +30,20 @@ public class CupManager : MonoBehaviour
     {
     }
 
-    public void DeactivateACoupInAGroup(int cupNumber, bool playersCup)
+    public bool IsMyCup(CupController Cup)
     {
-        if (playersCup)
-            DeactivateACoupInABundle(cupNumber, playersCupBundle);
-        else
-            DeactivateACoupInABundle(cupNumber, enemysCupBundle);
-            
+        if (Cup.father == null)
+        {
+            Debug.LogError("Cup '"+Cup+"' does not have a father (CupBundleController)!");
+            return false;
+        }
+
+        return Cup.father == playersCupBundle;
     }
 
-    private static void DeactivateACoupInABundle(int cupNumber, CupBundleController cupBundleController)
+    public void ResetAllCups()
     {
-        cupBundleController.DeactivateCupAt(cupNumber);
+        playersCupBundle.ResetAllCups();
+        enemysCupBundle.ResetAllCups();
     }
-
-    public void ReGroupACupGroup(bool playersCup)
-    {
-        if (playersCup)
-            ReGroupACupBundle(playersCupBundle);
-        else
-            ReGroupACupBundle(enemysCupBundle);
-    }
-
-    private void ReGroupACupBundle(CupBundleController cupBundle)
-    {
-
-        int activeCups = cupBundle.GetNumberOfActiveCups();
-        throw new NotImplementedException();
-    }
-
-    public void SetAllCupsActive()
-    {
-        playersCupBundle.ActivateAllCups();
-        enemysCupBundle.ActivateAllCups();
-    }
-
-   
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0,0,0,0]")]
+	[GeneratedInterpol("{\"inter\":[0,0,0]")]
 	public partial class GameManagerNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 8;
@@ -108,37 +108,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (playedTimeChanged != null) playedTimeChanged(_playedTime, timestep);
 			if (fieldAltered != null) fieldAltered("playedTime", _playedTime, timestep);
 		}
-		[ForgeGeneratedField]
-		private int _MaxPoints;
-		public event FieldEvent<int> MaxPointsChanged;
-		public Interpolated<int> MaxPointsInterpolation = new Interpolated<int>() { LerpT = 0f, Enabled = false };
-		public int MaxPoints
-		{
-			get { return _MaxPoints; }
-			set
-			{
-				// Don't do anything if the value is the same
-				if (_MaxPoints == value)
-					return;
-
-				// Mark the field as dirty for the network to transmit
-				_dirtyFields[0] |= 0x8;
-				_MaxPoints = value;
-				hasDirtyFields = true;
-			}
-		}
-
-		public void SetMaxPointsDirty()
-		{
-			_dirtyFields[0] |= 0x8;
-			hasDirtyFields = true;
-		}
-
-		private void RunChange_MaxPoints(ulong timestep)
-		{
-			if (MaxPointsChanged != null) MaxPointsChanged(_MaxPoints, timestep);
-			if (fieldAltered != null) fieldAltered("MaxPoints", _MaxPoints, timestep);
-		}
 
 		protected override void OwnershipChanged()
 		{
@@ -151,7 +120,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			hostPointsInterpolation.current = hostPointsInterpolation.target;
 			clientPointsInterpolation.current = clientPointsInterpolation.target;
 			playedTimeInterpolation.current = playedTimeInterpolation.target;
-			MaxPointsInterpolation.current = MaxPointsInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -161,7 +129,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			UnityObjectMapper.Instance.MapBytes(data, _hostPoints);
 			UnityObjectMapper.Instance.MapBytes(data, _clientPoints);
 			UnityObjectMapper.Instance.MapBytes(data, _playedTime);
-			UnityObjectMapper.Instance.MapBytes(data, _MaxPoints);
 
 			return data;
 		}
@@ -180,10 +147,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			playedTimeInterpolation.current = _playedTime;
 			playedTimeInterpolation.target = _playedTime;
 			RunChange_playedTime(timestep);
-			_MaxPoints = UnityObjectMapper.Instance.Map<int>(payload);
-			MaxPointsInterpolation.current = _MaxPoints;
-			MaxPointsInterpolation.target = _MaxPoints;
-			RunChange_MaxPoints(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -197,8 +160,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _clientPoints);
 			if ((0x4 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _playedTime);
-			if ((0x8 & _dirtyFields[0]) != 0)
-				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _MaxPoints);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -254,19 +215,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_playedTime(timestep);
 				}
 			}
-			if ((0x8 & readDirtyFlags[0]) != 0)
-			{
-				if (MaxPointsInterpolation.Enabled)
-				{
-					MaxPointsInterpolation.target = UnityObjectMapper.Instance.Map<int>(data);
-					MaxPointsInterpolation.Timestep = timestep;
-				}
-				else
-				{
-					_MaxPoints = UnityObjectMapper.Instance.Map<int>(data);
-					RunChange_MaxPoints(timestep);
-				}
-			}
 		}
 
 		public override void InterpolateUpdate()
@@ -288,11 +236,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_playedTime = (float)playedTimeInterpolation.Interpolate();
 				//RunChange_playedTime(playedTimeInterpolation.Timestep);
-			}
-			if (MaxPointsInterpolation.Enabled && !MaxPointsInterpolation.current.UnityNear(MaxPointsInterpolation.target, 0.0015f))
-			{
-				_MaxPoints = (int)MaxPointsInterpolation.Interpolate();
-				//RunChange_MaxPoints(MaxPointsInterpolation.Timestep);
 			}
 		}
 

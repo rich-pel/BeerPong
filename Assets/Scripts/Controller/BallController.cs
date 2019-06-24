@@ -52,8 +52,13 @@ public class BallController : SyncedBallBehavior
     {
         if (other.gameObject.tag.Equals("Cup"))
         {
-            GameManager.instance.BallFellInCup(other.gameObject.GetComponentInParent<CupController>()
-                .GetCupPositionInGroup());
+            CupController cup = other.gameObject.GetComponent<CupController>();
+            if (!cup)
+            {
+                Debug.LogError("Object tagged as Cup '"+other+"' does not have a CupController attached!");
+                return;
+            }
+            GameManager.instance.BallFellInCup(cup);
             AudioManager.instance.Play("BallHitCup");
         }
     }

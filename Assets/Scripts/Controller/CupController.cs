@@ -2,44 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class     CupController : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public class CupController : MonoBehaviour
 {
+    public CupBundleController father;
+    private Vector3 homePosition;
+    private Rigidbody body;
 
-    [SerializeField] private int cupPosistionInGroup;
-//    public int CupNumberInGroup;
-    
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-        
-    //}
-
-    //// Update is called once per frame
-    //void Update()
-    //{
-        
-    //}
-
-    public void DeactivateTheCup()
+    void Start()
     {
-        //Cup Group should be informed that this cup is not available anymore, based on the cup number?
+        homePosition = transform.position;
+        body = GetComponent<Rigidbody>(); // no check required because of RequireComponent
+    }
+    
+    public void Deactivate()
+    {
         gameObject.SetActive(false);
     }
 
-
-    public void ActivateTheCup()
+    public void Reset()
     {
+        transform.position = homePosition;
+        body.angularVelocity = Vector3.zero;
+        body.velocity = Vector3.zero;
         gameObject.SetActive(true);
-        
-    }
-    public void SwitchActiveStatus()
-    {
-        gameObject.SetActive(!gameObject.activeInHierarchy);
-    }
-    
-    public int GetCupPositionInGroup()
-    {
-        return cupPosistionInGroup;
     }
 }
 
