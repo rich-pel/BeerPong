@@ -5945,10 +5945,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a447ad70ed67c24093a8e785f1aadd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postprocessMaterial: {fileID: 2100000, guid: 5cc0268dee57204419138f57ea8493d4, type: 2}
-  speed: 0.0001
-  maxBlur: 0.5
-  blurSize: 0.2
+  postprocessMaterials:
+  - {fileID: 2100000, guid: 29c5f5612b5f7b848b20c977c4b1a5b1, type: 2}
+  - {fileID: 2100000, guid: 5cc0268dee57204419138f57ea8493d4, type: 2}
+  _speed: 1
 --- !u!1001 &884729696097047020
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -30,7 +30,8 @@ public class BlurController : MonoBehaviour
         if (GameManager.instance.GetMaxPoints() != 0)
             _maxBlur = (float) (GameManager.instance.GetEnemyPoints() / GameManager.instance.GetMaxPoints());
         else
-            _maxBlur = 0.1f;
+            _maxBlur = 0.05f;
+
         
         // calculate sine function 
         _blurSize = _maxBlur * Mathf.Sin(Time.time * _speed);
