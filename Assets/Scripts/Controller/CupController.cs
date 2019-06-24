@@ -8,16 +8,6 @@ public class     CupController : MonoBehaviour
     public bool fliped = false;
     private float _criticalAngle = 45.0f;
 
-
-    [SerializeField] private int cupPositionInGroup;
-    //    public int CupNumberInGroup;
-
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-
-    //}
-    
     // Update is called once per frame
     void Update()
     {
