@@ -27,8 +27,8 @@ public class BlurController : MonoBehaviour
     void Update()
     {
         // How many Bier did you drink, but do not divide by zero
-        if (GameManager.instance.GetMaxPoints() != 0)
-            _maxBlur = (float) (GameManager.instance.GetEnemyPoints() / GameManager.instance.GetMaxPoints());
+        if (GameManager.MaxPoints != 0)
+            _maxBlur = (float) (GameManager.instance.GetEnemyPoints() / GameManager.MaxPoints);
         else
             _maxBlur = 0.1f;
         

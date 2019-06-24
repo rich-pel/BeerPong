@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Ground
   - Cup
+  - Table
+  - Counter
+  - Wall
   layers:
   - Default
   - TransparentFX

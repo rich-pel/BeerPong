@@ -20,7 +20,6 @@ public class CupManager : MonoBehaviour
     [SerializeField] private CupBundleController playersCupBundle;
     [SerializeField] private CupBundleController enemysCupBundle;
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -31,12 +30,15 @@ public class CupManager : MonoBehaviour
     {
     }
 
-    public void DeactivateCoup(int cupNumber, bool playersCup)
+    public bool IsMyCup(CupController Cup)
     {
-        if (playersCup)
-            playersCupBundle.DeactivateCupAt(cupNumber);
-        else
-            enemysCupBundle.DeactivateCupAt(cupNumber);
+        if (Cup.father == null)
+        {
+            Debug.LogError("Cup '"+Cup+"' does not have a father (CupBundleController)!");
+            return false;
+        }
+
+        return Cup.father == playersCupBundle;
     }
 
     public void ResetAllCups()

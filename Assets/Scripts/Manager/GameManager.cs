@@ -1,14 +1,16 @@
 ﻿using BeardedManStudios.Forge.Networking;
+using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking.Generated;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 public class GameManager : GameManagerBehavior
 {
-    enum EGameState
+    public enum EGameState
     {
         WaitingForConnection,
-        
+        Pause,
+        Running
     }
 
     #region Singleton
@@ -21,24 +23,28 @@ public class GameManager : GameManagerBehavior
     }
 
     #endregion
-
+    
+    public const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
+    [SerializeField] private int MaxTries = 1;
+    [SerializeField] private float StartCountdown = 3.0f;
+    
+    public EGameState gameState { get; private set; }
+    
     private bool myTurn = false;
-    [SerializeField] private int MaxPoints = 10;
     private bool bInit = false;
-
-    [SerializeField] private int maxTries = 3;
     private int currentTry = 0;
+    
+    private float countdownTimer = 0f;
+
+
 
     // Start is called before the first frame update
     void Init()
     {
-        if (networkObject.IsServer)
+        if (IsServer())
         {
-            myTurn = true; // host always starts
-            networkObject.hostPoints = 0;
-            networkObject.clientPoints = 0;
-            networkObject.playedTime = 0;
-            networkObject.MaxPoints = MaxPoints;
+            Reset();
+            gameState = EGameState.WaitingForConnection;
         }
     }
 
@@ -51,24 +57,35 @@ public class GameManager : GameManagerBehavior
         // 
         // Unity's Update() running, before this object is instantiated
         // on the network is **very** rare, but better be safe 100%
+        if (!IsServer()) return;
 
-
-        if (networkObject == null) return;
-
+        // async init (Start) required because of networking
         if (!bInit)
         {
             Init();
             bInit = true;
         }
 
-        if (networkObject.IsServer)
+        if (gameState == EGameState.WaitingForConnection && EnemyIsConnected())
         {
-            //if (currentTry >= maxTries && !BallManager.instance.BallIsInAction())
-            //{
-            //    SetTurn(!checkIsMyTurn());
-            //    currentTry = 0;
-            //}
-
+            Debug.Log("Enemy connected!");
+            Reset();
+        }
+        else if (gameState == EGameState.Pause)
+        {
+            if (countdownTimer > 0f)
+            {
+                countdownTimer -= Time.deltaTime;
+            }
+            else
+            {
+                Debug.Log("Start Game!");
+                Reset();
+                gameState = EGameState.Running;
+            }
+        }
+        else if (gameState == EGameState.Running)
+        {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Debug.Log("Space Hit: " + currentTry);
@@ -77,12 +94,56 @@ public class GameManager : GameManagerBehavior
             }
 
             networkObject.playedTime += Time.deltaTime;
+            CheckGameOver();
+        }
+
+        // check if enemy is still connected...
+        if (gameState != EGameState.WaitingForConnection && !EnemyIsConnected())
+        {
+            Debug.LogWarning("We lost the connection to our Enemy! Reset Game!");
+            Reset();
+            gameState = EGameState.WaitingForConnection;
         }
     }
 
-    private bool checkIsMyTurn()
+    void Reset()
     {
-        return currentTry < maxTries;
+        if (!IsServer()) return;
+        
+        myTurn = true;
+        gameState = EGameState.Pause;
+        countdownTimer = StartCountdown;
+        currentTry = 0;
+        networkObject.hostPoints = 0;
+        networkObject.clientPoints = 0;
+        networkObject.playedTime = 0;
+        
+        CupManager.instance.ResetAllCups();
+        BallManager.instance.SetPositionToBallHolder(myTurn);
+        
+        Debug.Log("Game Resetted!");
+    }
+
+    void CheckGameOver()
+    {
+        if (!IsServer()) return;
+        
+        if (gameState != EGameState.Running)
+        {
+            Debug.LogError("Called 'CheckGameOver' although NO Game is currently running!");
+            return;
+        }
+
+        if (networkObject.hostPoints >= MaxPoints)
+        {
+            Debug.Log("WE WON !!!!!!!!!!!");
+            Reset();
+        }
+        else if (networkObject.clientPoints >= MaxPoints)
+        {
+            Debug.Log("The Enemy won...................");
+            Reset();
+        }
     }
 
     public bool IsServer()
@@ -90,48 +151,83 @@ public class GameManager : GameManagerBehavior
         return networkObject != null ? networkObject.IsServer : false;
     }
 
-    public void BallFellInCup(int cupPosition)
+    public bool EnemyIsConnected()
     {
-        if (networkObject == null || !networkObject.IsServer) return;
+        return NetworkManager.Instance.Networker.Players.Count >= 2;
+    }
 
+    public void BallFellInCup(CupController cup)
+    {
+        if (!IsServer() || gameState != EGameState.Running) return;
+        
         //Zugehörige Gruppe
         //Aktueller Becher
         //Becher muss verschwinden
         //Punkte Stand muss erhöht werden
         //Ball muss position wechseln
         Debug.Log("In Ball Fell In Cup");
-
-        CupManager.instance.DeactivateCoup(cupPosition, checkIsMyTurn());
         
         //Here has also to happend the update for the points and so on...
-        if (checkIsMyTurn())
+        if (myTurn)
         {
-            networkObject.hostPoints++;
+            if (CupManager.instance.IsMyCup(cup))
+            {
+                Debug.Log("You hit the wrong cup, idiot!");
+            }
+            else
+            {
+                cup.Deactivate();
+                networkObject.hostPoints++;
+                Debug.Log("I scored a Point! My Points: " + networkObject.hostPoints);
+                CheckGameOver();
+            }
         }
         else
         {
-            networkObject.clientPoints++;
+            if (!CupManager.instance.IsMyCup(cup))
+            {
+                Debug.Log("Enemy hit the wrong cup, lol!");
+            }
+            else
+            {
+                cup.Deactivate();
+                networkObject.clientPoints++;
+                Debug.Log("The Enemy scored a Point! Enemy Points: " + networkObject.clientPoints);
+                CheckGameOver();
+            }
         }
 
-        //currentTry++;
-        //Debug.Log("Current Try No: " + currentTry);
-        SetTurn(!myTurn);
+        NextTry();
     }
 
     public void BallFellBeside()
     {
-        if (networkObject == null || !networkObject.IsServer) return;
+        if (!IsServer() || gameState != EGameState.Running) return;
 
-        //no counting for the points
-        SetTurn(!myTurn);
-        //currentTry++;
-        //Debug.Log("Current Try No: " + currentTry);
+        Debug.Log("Someone can't aim, lol");
+        NextTry();
     }
 
+    private void NextTry()
+    {
+        if (!IsServer()) return;
+        
+        currentTry++;
+        if (currentTry >= MaxTries)
+        {
+            SetTurn(!myTurn);
+        }
+        else
+        {
+            Debug.Log("Try No. "+currentTry+"/"+MaxTries);
+        }
+    }
+    
     private void SetTurn(bool IamNext)
     {
-        if (networkObject == null || !networkObject.IsServer) return;
-
+        if (!IsServer()) return;
+      
+        currentTry = 0;
         myTurn = IamNext;
         Debug.Log("It's " + (myTurn ? "my Turn" : "the enemys Turn") + " Turn!");
 
@@ -157,15 +253,10 @@ public class GameManager : GameManagerBehavior
         return networkObject != null ? networkObject.playedTime : 0f;
     }
 
-    public int GetMaxPoints()
-    {
-        return networkObject != null ? networkObject.MaxPoints : 0;
-    }
-
     // RPC, do not call directly!
     public override void PlayerTurn(RpcArgs args)
     {
-        if (networkObject.IsServer) return;
+        if (IsServer()) return;
 
         myTurn = args.GetNext<bool>();
 
@@ -175,7 +266,7 @@ public class GameManager : GameManagerBehavior
     // RPC, do not call directly!
     public override void GameOver(RpcArgs args)
     {
-        if (networkObject.IsServer) return;
+        if (IsServer()) return;
 
         // TODO: Show some end screen etc...
         throw new System.NotImplementedException();
@@ -186,10 +277,4 @@ public class GameManager : GameManagerBehavior
         // TODO: this is dead right now...
         //currentTry++;
     }
-
-    public void StartRound()
-    {
-        CupManager.instance.ResetAllCups();
-    }
-    
 }

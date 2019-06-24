@@ -4,37 +4,31 @@ using UnityEngine;
 
 public class CupBundleController : MonoBehaviour
 {
-
     [SerializeField] private List<CupController> cupsInGroup;
-    // Start is called before the first frame update
+
     void Start()
     {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    public void DeactivateCupAt(int cupNumber)
-    {
-        CupController cupController = GetCupWithNumber(cupNumber);
-        if (cupController != null) 
+        foreach (CupController cup in cupsInGroup)
         {
-            cupController.Deactivate();
+            cup.father = this;
         }
     }
-
-    private CupController GetCupWithNumber(int cupNumber)
+    
+    public void DeactivateCup(CupController Cup)
     {
-        foreach (CupController cupController in cupsInGroup)
+        if (!Cup)
         {
-            if (cupController.GetCupPosition() == cupNumber)
-            {
-                return cupController;
-            }
+            Debug.LogError("Tried to deactivate Cup NULL!");
+            return;
         }
-        return null;
+        
+        if (!cupsInGroup.Contains(Cup))
+        {
+            Debug.LogError("Tried to deactivate Cup '"+Cup+"' not present in our group!");
+            return;
+        }
+        
+        Cup.Deactivate();
     }
 
     public int GetNumberOfActiveCups()

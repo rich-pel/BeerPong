@@ -5,19 +5,18 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class CupController : MonoBehaviour
 {
-    [SerializeField] private int cupPosistionInGroup;
+    public CupBundleController father;
     private Vector3 homePosition;
     private Rigidbody body;
 
     void Start()
     {
         homePosition = transform.position;
-        body = GetComponent<Rigidbody>();
+        body = GetComponent<Rigidbody>(); // no check required because of RequireComponent
     }
-
+    
     public void Deactivate()
     {
-        //Cup Group should be informed that this cup is not available anymore, based on the cup number?
         gameObject.SetActive(false);
     }
 
@@ -27,11 +26,6 @@ public class CupController : MonoBehaviour
         body.angularVelocity = Vector3.zero;
         body.velocity = Vector3.zero;
         gameObject.SetActive(true);
-    }
-    
-    public int GetCupPosition()
-    {
-        return cupPosistionInGroup;
     }
 }
 
