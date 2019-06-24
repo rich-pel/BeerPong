@@ -17,7 +17,6 @@ public class CupManager : MonoBehaviour
 
     #endregion
 
-
     [SerializeField] private CupBundleController playersCupBundle;
     [SerializeField] private CupBundleController enemysCupBundle;
 
@@ -32,40 +31,17 @@ public class CupManager : MonoBehaviour
     {
     }
 
-    public void DeactivateACoupInAGroup(int cupNumber, bool playersCup)
+    public void DeactivateCoup(int cupNumber, bool playersCup)
     {
         if (playersCup)
-            DeactivateACoupInABundle(cupNumber, playersCupBundle);
+            playersCupBundle.DeactivateCupAt(cupNumber);
         else
-            DeactivateACoupInABundle(cupNumber, enemysCupBundle);
-            
+            enemysCupBundle.DeactivateCupAt(cupNumber);
     }
 
-    private static void DeactivateACoupInABundle(int cupNumber, CupBundleController cupBundleController)
+    public void ResetAllCups()
     {
-        cupBundleController.DeactivateCupAt(cupNumber);
+        playersCupBundle.ResetAllCups();
+        enemysCupBundle.ResetAllCups();
     }
-
-    public void ReGroupACupGroup(bool playersCup)
-    {
-        if (playersCup)
-            ReGroupACupBundle(playersCupBundle);
-        else
-            ReGroupACupBundle(enemysCupBundle);
-    }
-
-    private void ReGroupACupBundle(CupBundleController cupBundle)
-    {
-
-        int activeCups = cupBundle.GetNumberOfActiveCups();
-        throw new NotImplementedException();
-    }
-
-    public void SetAllCupsActive()
-    {
-        playersCupBundle.ActivateAllCups();
-        enemysCupBundle.ActivateAllCups();
-    }
-
-   
 }

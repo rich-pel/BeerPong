@@ -5,6 +5,12 @@ using Debug = UnityEngine.Debug;
 
 public class GameManager : GameManagerBehavior
 {
+    enum EGameState
+    {
+        WaitingForConnection,
+        
+    }
+
     #region Singleton
 
     public static GameManager instance;
@@ -95,7 +101,7 @@ public class GameManager : GameManagerBehavior
         //Ball muss position wechseln
         Debug.Log("In Ball Fell In Cup");
 
-        CupManager.instance.DeactivateACoupInAGroup(cupPosition, checkIsMyTurn());
+        CupManager.instance.DeactivateCoup(cupPosition, checkIsMyTurn());
         
         //Here has also to happend the update for the points and so on...
         if (checkIsMyTurn())
@@ -183,7 +189,7 @@ public class GameManager : GameManagerBehavior
 
     public void StartRound()
     {
-        CupManager.instance.SetAllCupsActive();
+        CupManager.instance.ResetAllCups();
     }
     
 }

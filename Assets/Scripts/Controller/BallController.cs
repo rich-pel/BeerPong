@@ -53,7 +53,7 @@ public class BallController : SyncedBallBehavior
         if (other.gameObject.tag.Equals("Cup"))
         {
             GameManager.instance.BallFellInCup(other.gameObject.GetComponentInParent<CupController>()
-                .GetCupPositionInGroup());
+                .GetCupPosition());
             AudioManager.instance.Play("BallHitCup");
         }
     }

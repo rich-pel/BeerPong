@@ -21,7 +21,7 @@ public class CupBundleController : MonoBehaviour
         CupController cupController = GetCupWithNumber(cupNumber);
         if (cupController != null) 
         {
-            cupController.DeactivateTheCup();
+            cupController.Deactivate();
         }
     }
 
@@ -29,7 +29,7 @@ public class CupBundleController : MonoBehaviour
     {
         foreach (CupController cupController in cupsInGroup)
         {
-            if (cupController.GetCupPositionInGroup() == cupNumber)
+            if (cupController.GetCupPosition() == cupNumber)
             {
                 return cupController;
             }
@@ -50,11 +50,11 @@ public class CupBundleController : MonoBehaviour
         return cupsActive;
     }
 
-    public void ActivateAllCups()
+    public void ResetAllCups()
     {
         foreach (CupController cup in cupsInGroup)
         {
-            cup.ActivateTheCup();
+            cup.Reset();
         }
     }
 }
