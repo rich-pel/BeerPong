@@ -66,7 +66,7 @@ public class GameManager : GameManagerBehavior
             bInit = true;
         }
 
-        if (gameState == EGameState.WaitingForConnection && EnemyIsConnected())
+        if (gameState == EGameState.WaitingForConnection)// && EnemyIsConnected())
         {
             Debug.Log("Enemy connected!");
             Reset();
@@ -98,12 +98,12 @@ public class GameManager : GameManagerBehavior
         }
 
         // check if enemy is still connected...
-        if (gameState != EGameState.WaitingForConnection && !EnemyIsConnected())
+        /*if (gameState != EGameState.WaitingForConnection && !EnemyIsConnected())
         {
             Debug.LogWarning("We lost the connection to our Enemy! Reset Game!");
             Reset();
             gameState = EGameState.WaitingForConnection;
-        }
+        }*/
     }
 
     void Reset()
@@ -240,12 +240,12 @@ public class GameManager : GameManagerBehavior
 
     public int GetPlayerPoints()
     {
-        return networkObject != null ? networkObject.clientPoints : 0;
+        return networkObject != null ? networkObject.IsServer ? networkObject.hostPoints : networkObject.clientPoints : 0;
     }
 
     public int GetEnemyPoints()
     {
-        return networkObject != null ? networkObject.hostPoints : 0;
+        return networkObject != null ? networkObject.IsServer ? networkObject.clientPoints : networkObject.hostPoints : 0;
     }
 
     public float GetCurrentPlayedTime()
