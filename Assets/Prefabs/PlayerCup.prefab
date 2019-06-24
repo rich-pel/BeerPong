@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b28fa9c81b74504492eeaf3e0c00350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CupNumberInGroup: 0
+  cupPosistionInGroup: 0
 --- !u!1001 &884729696408745803
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -179,7 +179,7 @@ PrefabInstance:
     - target: {fileID: -927199367670048503, guid: a541bfa358366fa4da0e6c5f94d14e18,
         type: 3}
       propertyPath: m_Name
-      value: Cup
+      value: PlayerCup
       objectReference: {fileID: 0}
     - target: {fileID: -927199367670048503, guid: a541bfa358366fa4da0e6c5f94d14e18,
         type: 3}
