@@ -63,13 +63,9 @@ public class BallManager : MonoBehaviour
             Debug.Log("The enemy has the Ball");
         }
 
-        // must be done before changing ownership!
-        // TODO: doesn't seem to work as intended
-        throwableBall.UpdateNetworkPosition();
-
-        if (throwableBall.networkObject != null && NetworkManager.Instance.Networker.Players.Count >= 2)
+        if (throwableBall.networkObject != null && GameManager.instance.EnemyIsConnected())
         {
-            throwableBall.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[myTurn ? 0 : 1]);
+            throwableBall.SetOwnership(myTurn);
         }
     }
 

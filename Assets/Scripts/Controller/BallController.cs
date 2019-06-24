@@ -1,11 +1,16 @@
 ﻿using BeardedManStudios.Forge.Networking.Generated;
+using BeardedManStudios.Forge.Networking.Unity;
 using Valve.VR.InteractionSystem;
 using UnityEngine;
+using BeardedManStudios.Forge.Networking;
 
 [RequireComponent(typeof(Throwable))]
 public class BallController : SyncedBallBehavior
 {
     Throwable throwable;
+    bool sync = true;
+    bool nextOwnershipState = false;
+    Vector3 lastPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +31,39 @@ public class BallController : SyncedBallBehavior
         if (networkObject == null) return;
 
         //Debug.Log("Doing Networking 'n stuff");
-        UpdateNetworkPosition();
+        if (sync)
+        {
+            UpdateNetworkPosition();
+        }
+        else
+        {
+            transform.position = lastPosition;
+
+            sync = networkObject.IsOwner == nextOwnershipState;
+            if (sync)
+            {
+                ApplyChangedOwnership();
+            }
+        }
+    }
+
+    void ApplyChangedOwnership()
+    {
+        throwable.attachmentFlags = networkObject.IsOwner ? Hand.AttachmentFlags.VelocityMovement : 0;
+        Debug.Log("Switched ownership of Ball to: " + (networkObject.IsOwner ? "ME" : "ENEMY"));
+    }
+
+    public void SetOwnership(bool IOwnThis)
+    {
+        if (!networkObject.IsServer) return;
+
+        lastPosition = transform.position;
+        sync = false;
+        networkObject.SendRpc(RPC_NOTIFY_OWNERSHIP_CHANGE, Receivers.Others, !IOwnThis, transform.position);
+        networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[IOwnThis ? 0 : 1]);
+
+        ApplyChangedOwnership();
+        sync = true;
     }
 
     public void UpdateNetworkPosition()
@@ -67,5 +104,12 @@ public class BallController : SyncedBallBehavior
     {
         BallManager.instance.BallIsGrabbed();
         AudioManager.instance.Play("TakeBall");
+    }
+
+    public override void NotifyOwnershipChange(RpcArgs args)
+    {
+        throwable.attachmentFlags = 0;
+        nextOwnershipState = args.GetNext<bool>();
+        lastPosition = args.GetNext<Vector3>();
     }
 }

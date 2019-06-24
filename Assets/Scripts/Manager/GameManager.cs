@@ -233,7 +233,7 @@ public class GameManager : GameManagerBehavior
 
         BallManager.instance.SetPositionToBallHolder(myTurn);
 
-        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
+        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Others, !myTurn);
 
         // TODO: Show the player some indication it's his turn!
     }
