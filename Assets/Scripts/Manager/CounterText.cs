@@ -6,8 +6,8 @@ using UnityEngine;
 public class CounterText : MonoBehaviour
 {
 
-	public Text playerPointstext;
-	public Text enemyPointstext;
+	public Text playerPointsText;
+	public Text enemyPointsText;
 	public int playerPoints;
 	public int enemyPoints;
 
@@ -21,7 +21,7 @@ public class CounterText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerPointstext.text = "Your points: "+ GameManager.instance.GetPlayerPoints();
-		enemyPointstext.text = "Enemys points: "+ GameManager.instance.GetEnemyPoints();
+        playerPointsText.text = " "+ GameManager.instance.GetPlayerPoints();
+		enemyPointsText.text = " "+ GameManager.instance.GetEnemyPoints();
     }
 }
