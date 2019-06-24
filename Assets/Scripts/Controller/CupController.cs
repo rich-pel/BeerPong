@@ -5,20 +5,28 @@ using UnityEngine;
 public class     CupController : MonoBehaviour
 {
 
-    [SerializeField] private int cupPosistionInGroup;
-//    public int CupNumberInGroup;
-    
-    //// Start is called before the first frame update
-    //void Start()
-    //{
-        
-    //}
+    public bool fliped = false;
+    private float _criticalAngle = 45.0f;
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-        
-    //}
+
+    [SerializeField] private int cupPosistionInGroup;
+    //    public int CupNumberInGroup;
+
+    //// Start is called before the first frame update
+    void Start()
+    {
+
+    }
+    
+    // Update is called once per frame
+    void Update()
+    {
+        // get angle in Range [0, 180]
+        float _angle = Vector3.Angle(Vector3.up, transform.forward);
+
+        if (_angle > _criticalAngle)
+            fliped = true;
+    }
 
     public void DeactivateTheCup()
     {

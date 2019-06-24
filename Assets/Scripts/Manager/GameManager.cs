@@ -179,6 +179,8 @@ public class GameManager : GameManagerBehavior
     {
         // TODO: this is dead right now...
         //currentTry++;
+        throw new System.NotImplementedException();
+
     }
 
     public void StartRound()
