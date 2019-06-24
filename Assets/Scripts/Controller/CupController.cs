@@ -9,14 +9,14 @@ public class     CupController : MonoBehaviour
     private float _criticalAngle = 45.0f;
 
 
-    [SerializeField] private int cupPosistionInGroup;
+    [SerializeField] private int cupPositionInGroup;
     //    public int CupNumberInGroup;
 
     //// Start is called before the first frame update
-    void Start()
-    {
+    //void Start()
+    //{
 
-    }
+    //}
     
     // Update is called once per frame
     void Update()
@@ -47,7 +47,7 @@ public class     CupController : MonoBehaviour
     
     public int GetCupPositionInGroup()
     {
-        return cupPosistionInGroup;
+        return cupPositionInGroup;
     }
 }
 
