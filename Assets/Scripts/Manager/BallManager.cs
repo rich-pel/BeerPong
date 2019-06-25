@@ -6,6 +6,11 @@ public class BallManager : MonoBehaviour
     #region Singleton
 
     public static BallManager instance;
+    public bool Sync
+    {
+        get { return throwableBall.Sync; }
+        set { throwableBall.Sync = value; }
+    }
 
     private void Awake()
     {
@@ -15,9 +20,9 @@ public class BallManager : MonoBehaviour
     #endregion
 
     [SerializeField] private BallController throwableBall;
-    public GameObject playersBallHolderArea;
-    public GameObject enemysBallHolderArea;
-    public int moveableTimeForBall = 10;
+    [SerializeField] private GameObject playersBallHolderArea;
+    [SerializeField] private GameObject enemysBallHolderArea;
+    [SerializeField] private int moveableTimeForBall = 10;
 
     private float timeOutForBall;
     private bool ballTimeIsTracked = false;
@@ -32,6 +37,13 @@ public class BallManager : MonoBehaviour
     {
         // deactivate whole script if we're not server
         gameObject.SetActive(GameManager.instance.IsServer());
+
+        if (!throwableBall)
+        {
+            Debug.LogError("throwableBall is not set!");
+            return;
+        }
+
         ballBody = throwableBall.GetComponent<Rigidbody>();
     }
 
@@ -69,6 +81,20 @@ public class BallManager : MonoBehaviour
         }
     }
 
+    public void BallSync(bool enable)
+    {
+        throwableBall.Sync = enable;
+    }
+
+    public void ApplyOwnership()
+    {
+        throwableBall.ApplyOwnership();
+    }
+
+    public bool AmIOwnerOfBall()
+    {
+        return throwableBall.networkObject.IsOwner;
+    }
 
     public void BallIsGrabbed()
     {

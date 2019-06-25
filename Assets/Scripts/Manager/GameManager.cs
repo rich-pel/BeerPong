@@ -35,7 +35,7 @@ public class GameManager : GameManagerBehavior
     private int currentTry = 0;
     
     private float countdownTimer = 0f;
-
+    private bool waitForHandshake = false;
 
 
     // Start is called before the first frame update
@@ -57,7 +57,34 @@ public class GameManager : GameManagerBehavior
         // 
         // Unity's Update() running, before this object is instantiated
         // on the network is **very** rare, but better be safe 100%
-        if (!IsServer()) return;
+        if (networkObject == null) return;
+
+        // ========== Client code ==========
+        if (!networkObject.IsServer)
+        {
+            Debug.Log("CLIENT CODE yay");
+
+            if (waitForHandshake && myTurn == BallManager.instance.AmIOwnerOfBall())
+            {
+                waitForHandshake = false;
+                BallManager.instance.SetPositionToBallHolder(myTurn);
+                BallManager.instance.ApplyOwnership();
+                BallManager.instance.Sync = true;
+
+                // Handshake to Server
+                networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Server, !myTurn);
+
+                Debug.Log("Correct Ownership received! Handshake send to Server!");
+            }
+            else
+            {
+                Debug.Log("Waiting for Ownership (currently: "+BallManager.instance.AmIOwnerOfBall()+") to change to my Turn state (currently: "+myTurn+") ...");
+            }
+
+            return;
+        }
+
+        // ========== Server code ==========
 
         // async init (Start) required because of networking
         if (!bInit)
@@ -215,6 +242,9 @@ public class GameManager : GameManagerBehavior
         currentTry++;
         if (currentTry >= MaxTries)
         {
+            // SetTurn will set currentTry back to 0 !
+            // This has the advantage of being able to switch the turn 
+            // mid game (if wished for some reason, e.g. space bar)
             SetTurn(!myTurn);
         }
         else
@@ -231,6 +261,7 @@ public class GameManager : GameManagerBehavior
         myTurn = IamNext;
         Debug.Log("It's " + (myTurn ? "my Turn" : "the enemys Turn") + " Turn!");
 
+        BallManager.instance.Sync = false;
         BallManager.instance.SetPositionToBallHolder(myTurn);
 
         networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Others, !myTurn);
@@ -256,9 +287,30 @@ public class GameManager : GameManagerBehavior
     // RPC, do not call directly!
     public override void PlayerTurn(RpcArgs args)
     {
-        if (IsServer()) return;
+        // NOTE: incoming Turn value should always be from our point of view!
+        bool incomingTurn = args.GetNext<bool>();
 
-        myTurn = args.GetNext<bool>();
+        if (IsServer())
+        {
+            if (incomingTurn == myTurn)
+            {
+                // Handshake successfull!
+                BallManager.instance.Sync = true;
+                Debug.Log("Turn Handshake successfull!");
+            }
+            else
+            {
+                Debug.LogError("Handshake mismatch! My turn: " + myTurn + " while the Client thinks: " + incomingTurn);
+            }
+        }
+        else
+        {
+            BallManager.instance.Sync = false;
+            myTurn = incomingTurn;
+            waitForHandshake = true;
+
+            Debug.Log("Receiving Turn - MyTurn: " + myTurn);
+        }
 
         // TODO: Show the player some indication it's his turn!
     }

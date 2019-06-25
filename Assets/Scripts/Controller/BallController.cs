@@ -7,10 +7,8 @@ using BeardedManStudios.Forge.Networking;
 [RequireComponent(typeof(Throwable))]
 public class BallController : SyncedBallBehavior
 {
+    public bool Sync = true;
     Throwable throwable;
-    bool sync = true;
-    bool nextOwnershipState = false;
-    Vector3 lastPosition;
 
     // Start is called before the first frame update
     void Start()
@@ -31,23 +29,13 @@ public class BallController : SyncedBallBehavior
         if (networkObject == null) return;
 
         //Debug.Log("Doing Networking 'n stuff");
-        if (sync)
+        if (Sync)
         {
             UpdateNetworkPosition();
         }
-        else
-        {
-            transform.position = lastPosition;
-
-            sync = networkObject.IsOwner == nextOwnershipState;
-            if (sync)
-            {
-                ApplyChangedOwnership();
-            }
-        }
     }
 
-    void ApplyChangedOwnership()
+    public void ApplyOwnership()
     {
         throwable.attachmentFlags = networkObject.IsOwner ? Hand.AttachmentFlags.VelocityMovement : 0;
         Debug.Log("Switched ownership of Ball to: " + (networkObject.IsOwner ? "ME" : "ENEMY"));
@@ -57,13 +45,8 @@ public class BallController : SyncedBallBehavior
     {
         if (!networkObject.IsServer) return;
 
-        lastPosition = transform.position;
-        sync = false;
-        networkObject.SendRpc(RPC_NOTIFY_OWNERSHIP_CHANGE, Receivers.Others, !IOwnThis, transform.position);
         networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[IOwnThis ? 0 : 1]);
-
-        ApplyChangedOwnership();
-        sync = true;
+        ApplyOwnership();
     }
 
     public void UpdateNetworkPosition()
@@ -104,12 +87,5 @@ public class BallController : SyncedBallBehavior
     {
         BallManager.instance.BallIsGrabbed();
         AudioManager.instance.Play("TakeBall");
-    }
-
-    public override void NotifyOwnershipChange(RpcArgs args)
-    {
-        throwable.attachmentFlags = 0;
-        nextOwnershipState = args.GetNext<bool>();
-        lastPosition = args.GetNext<Vector3>();
     }
 }

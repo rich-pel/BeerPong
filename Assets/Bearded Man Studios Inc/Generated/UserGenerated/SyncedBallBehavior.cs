@@ -4,11 +4,10 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"bool\", \"Vector3\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"IOwnThis\", \"LastPosition\"]]")]
+	[GeneratedRPC("{\"types\":[]")]
+	[GeneratedRPCVariableNames("{\"types\":[]")]
 	public abstract partial class SyncedBallBehavior : NetworkBehavior
 	{
-		public const byte RPC_NOTIFY_OWNERSHIP_CHANGE = 0 + 5;
 		
 		public SyncedBallNetworkObject networkObject = null;
 
@@ -22,7 +21,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("NotifyOwnershipChange", NotifyOwnershipChange, typeof(bool), typeof(Vector3));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -99,12 +97,6 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.SnapInterpolations();
 		}
 
-		/// <summary>
-		/// Arguments:
-		/// bool IOwnThis
-		/// Vector3 LastPosition
-		/// </summary>
-		public abstract void NotifyOwnershipChange(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
