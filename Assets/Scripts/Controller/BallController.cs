@@ -4,21 +4,31 @@ using Valve.VR.InteractionSystem;
 using UnityEngine;
 using BeardedManStudios.Forge.Networking;
 
-[RequireComponent(typeof(Throwable))]
+[RequireComponent(typeof(Throwable), typeof(Rigidbody))]
 public class BallController : SyncedBallBehavior
 {
-    public bool Sync = true;
+    bool _sync = true;
+    public bool Sync
+    {
+        get { return _sync; }
+        set
+        {
+            _sync = value;
+            body.isKinematic = !value;
+        }
+    }
     Throwable throwable;
+    Rigidbody body;
 
     // Start is called before the first frame update
     void Start()
     {
         // this should never fail due to RequireComponent Attribute
         throwable = GetComponent<Throwable>();
+        body = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         // If unity's Update() runs, before the object is
         // instantiated in the network, then simply don't
@@ -28,17 +38,10 @@ public class BallController : SyncedBallBehavior
         // on the network is **very** rare, but better be safe 100%
         if (networkObject == null) return;
 
-        //Debug.Log("Doing Networking 'n stuff");
         if (Sync)
         {
             UpdateNetworkPosition();
         }
-    }
-
-    public void ApplyOwnership()
-    {
-        throwable.attachmentFlags = networkObject.IsOwner ? Hand.AttachmentFlags.VelocityMovement : 0;
-        Debug.Log("Switched ownership of Ball to: " + (networkObject.IsOwner ? "ME" : "ENEMY"));
     }
 
     public void SetOwnership(bool IOwnThis)
@@ -46,19 +49,22 @@ public class BallController : SyncedBallBehavior
         if (!networkObject.IsServer) return;
 
         networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[IOwnThis ? 0 : 1]);
-        ApplyOwnership();
     }
 
     public void UpdateNetworkPosition()
     {
         if (networkObject.IsOwner)
         {
-            networkObject.position = transform.position;
+            body.useGravity = true;
+            networkObject.position = body.position;
             throwable.attachmentFlags = Hand.AttachmentFlags.VelocityMovement;
         }
         else
         {
-            transform.position = networkObject.position;
+            body.useGravity = false;
+            body.velocity = Vector3.zero;
+            body.angularVelocity = Vector3.zero;
+            body.MovePosition(networkObject.position);
             throwable.attachmentFlags = 0;
         }
     }

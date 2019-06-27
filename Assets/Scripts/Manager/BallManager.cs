@@ -36,7 +36,7 @@ public class BallManager : MonoBehaviour
     void Start()
     {
         // deactivate whole script if we're not server
-        gameObject.SetActive(GameManager.instance.IsServer());
+        gameObject.SetActive(GameManager.instance.IsServer);
 
         if (!throwableBall)
         {
@@ -60,35 +60,30 @@ public class BallManager : MonoBehaviour
     // Should only be called by the Server!
     public void SetPositionToBallHolder(bool myTurn)
     {
+        // if we're Client, the enemys BallHolderArea is our Area
+        if (GameManager.instance.IsClient) myTurn = !myTurn;
+
         if (myTurn)
         {
-            throwableBall.transform.position = playersBallHolderArea.transform.position;
-            ballBody.velocity = Vector3.zero;
-            ballBody.angularVelocity = Vector3.zero;
-            Debug.Log("I have the Ball");
+            ballBody.MovePosition(playersBallHolderArea.transform.position);
+            Debug.Log(GameManager.instance.IsClient ? "The ENEMY has the Ball" : "I have the Ball");
         }
         else
         {
-            throwableBall.transform.position = enemysBallHolderArea.transform.position;
-            ballBody.velocity = Vector3.zero;
-            ballBody.angularVelocity = Vector3.zero;
-            Debug.Log("The enemy has the Ball");
+            ballBody.MovePosition(enemysBallHolderArea.transform.position);
+            Debug.Log(GameManager.instance.IsClient ? "I have the Ball" : "The ENEMY has the Ball");
         }
 
-        if (throwableBall.networkObject != null && GameManager.instance.EnemyIsConnected())
+        ballBody.velocity = Vector3.zero;
+        ballBody.angularVelocity = Vector3.zero;
+    }
+
+    public void SetBallOwnership(bool myBall)
+    {
+        if (GameManager.instance.IsServer && GameManager.instance.EnemyIsConnected())
         {
-            throwableBall.SetOwnership(myTurn);
+            throwableBall.SetOwnership(myBall);
         }
-    }
-
-    public void BallSync(bool enable)
-    {
-        throwableBall.Sync = enable;
-    }
-
-    public void ApplyOwnership()
-    {
-        throwableBall.ApplyOwnership();
     }
 
     public bool AmIOwnerOfBall()
@@ -131,7 +126,7 @@ public class BallManager : MonoBehaviour
             AudioManager.instance.Play("BallHitWall");
         }
 
-        else if (gameObjectTag.Equals("Table"))
+        /*else if (gameObjectTag.Equals("Table"))
         {
             GameManager.instance.BallFellBeside();
 
@@ -139,7 +134,7 @@ public class BallManager : MonoBehaviour
             AudioManager.instance.Play("BallHitTable" + audioCountUp);
             if (audioCountUp >= ballDippingMax)
                 audioCountUp = 0;
-        }
+        }*/
 
         else if (gameObjectTag.Equals("Counter"))
         {
