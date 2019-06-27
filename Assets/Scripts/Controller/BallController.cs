@@ -27,6 +27,16 @@ public class BallController : SyncedBallBehavior
 
         //Debug.Log("Doing Networking 'n stuff");
         UpdateNetworkPosition();
+
+        if (BallFallsOutOfTheRoom())
+        {
+            GameManager.instance.BallFellBeside();
+        }
+    }
+
+    private bool BallFallsOutOfTheRoom()
+    {
+        return BallManager.instance.BallFallsOutOfTheRoom(gameObject.transform.position);
     }
 
     public void UpdateNetworkPosition()

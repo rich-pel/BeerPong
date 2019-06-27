@@ -25,6 +25,7 @@ public class BallManager : MonoBehaviour
     private int audioCountUp = 0;
     [SerializeField] private int ballDippingMax = 3;
     private Rigidbody ballBody;
+    [SerializeField] private float _maxDistanceFromRoom;
 
 
     // Start is called before the first frame update
@@ -129,5 +130,10 @@ public class BallManager : MonoBehaviour
     public bool BallIsInAction()
     {
         return ballTimeIsTracked && timeOutForBall < Time.time;
+    }
+
+    public bool BallFallsOutOfTheRoom(Vector3 ballPosition)
+    {
+        return Vector3.Distance(ballPosition, GameManager.instance.GetGroundPosition()) > _maxDistanceFromRoom;
     }
 }

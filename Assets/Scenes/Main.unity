@@ -266,6 +266,7 @@ MonoBehaviour:
   enemysBallHolderArea: {fileID: 1962699595}
   moveableTimeForBall: 10
   ballDippingMax: 3
+  _maxDistanceFromRoom: 10
 --- !u!114 &16655439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +281,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxTries: 1
   StartCountdown: 3
+  RoomGround: {fileID: 1275852936}
 --- !u!114 &16655440
 MonoBehaviour:
   m_ObjectHideFlags: 0
