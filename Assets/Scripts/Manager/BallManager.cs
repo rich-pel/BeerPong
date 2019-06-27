@@ -44,6 +44,11 @@ public class BallManager : MonoBehaviour
             ballTimeIsTracked = !ballTimeIsTracked;
             GameManager.instance.BallFellBeside();
         }
+
+        if (GetCurrentTimeLeft() <=0)
+        {
+            GameManager.instance.BallFellBeside();
+        }
     }
 
     // Should only be called by the Server!
