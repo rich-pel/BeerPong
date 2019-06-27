@@ -34,7 +34,7 @@ public class CupManager : MonoBehaviour
     {
         if (Cup.father == null)
         {
-            Debug.LogError("Cup '"+Cup+"' does not have a father (CupBundleController)!");
+            Debug.LogError("Cup '" + Cup + "' does not have a father (CupBundleController)!");
             return false;
         }
 
@@ -45,5 +45,13 @@ public class CupManager : MonoBehaviour
     {
         playersCupBundle.ResetAllCups();
         enemysCupBundle.ResetAllCups();
+    }
+
+    public void StandActiveCupsBackToOringPos(bool notMyTurnAnymore)
+    {
+        if (notMyTurnAnymore)
+            playersCupBundle.StandUpCupsAgain();
+        else
+            enemysCupBundle.StandUpCupsAgain();
     }
 }

@@ -230,6 +230,7 @@ public class GameManager : GameManagerBehavior
         if (!IsServer()) return;
       
         currentTry = 0;
+        CupManager.instance.StandActiveCupsBackToOringPos(myTurn);
         myTurn = IamNext;
         Debug.Log("It's " + (myTurn ? "my Turn" : "the enemys Turn") + " Turn!");
 
