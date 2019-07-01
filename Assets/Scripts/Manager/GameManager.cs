@@ -4,6 +4,7 @@ using BeardedManStudios.Forge.Networking.Generated;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
+
 public class GameManager : GameManagerBehavior
 {
     public enum EGameState
@@ -23,7 +24,10 @@ public class GameManager : GameManagerBehavior
     }
 
     #endregion
-    
+
+    public bool IsServer { get { return networkObject != null ? networkObject.IsServer : false; } }
+    public bool IsClient { get { return networkObject != null ? !networkObject.IsServer : false; } }
+
     public const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
     [SerializeField] private int MaxTries = 1;
     [SerializeField] private float StartCountdown = 3.0f;
@@ -32,21 +36,38 @@ public class GameManager : GameManagerBehavior
     
     public EGameState gameState { get; private set; }
     
-    private bool myTurn = false;
+    public bool MyTurn { get; private set; }
+
     private bool bInit = false;
     private int currentTry = 0;
     
     private float countdownTimer = 0f;
-
+    private bool waitForHandshake = false;
 
 
     // Start is called before the first frame update
     void Init()
     {
-        if (IsServer())
+        if (IsServer)
         {
             Reset();
             gameState = EGameState.WaitingForConnection;
+
+            NetworkManager.Instance.Networker.playerDisconnected += (NetworkingPlayer player, NetWorker sender) =>
+            {
+                Debug.Log("Player " + player.Ip + " disconnected!");
+            };
+
+            NetworkManager.Instance.Networker.playerRejected += (NetworkingPlayer player, NetWorker sender) =>
+            {
+                Debug.Log("Player " + player.Ip + " rejected!");
+            };
+
+            NetworkManager.Instance.Networker.playerAccepted += (NetworkingPlayer player, NetWorker sender) => 
+            {
+                Debug.Log("Player " + player.Ip + " accepted! Sending current turn...");
+                networkObject.SendRpc(player, RPC_PLAYER_TURN, MyTurn);
+            };
         }
     }
 
@@ -59,7 +80,34 @@ public class GameManager : GameManagerBehavior
         // 
         // Unity's Update() running, before this object is instantiated
         // on the network is **very** rare, but better be safe 100%
-        if (!IsServer()) return;
+        if (networkObject == null) return;
+
+        // ========== Client code ==========
+        if (!networkObject.IsServer)
+        {
+            if (waitForHandshake)
+            {
+                if (MyTurn == BallManager.instance.AmIOwnerOfBall())
+                {
+                    waitForHandshake = false;
+                    BallManager.instance.SetPositionToBallHolder(MyTurn);
+                    BallManager.instance.SetBallState(BallController.EBallState.WaitForGrab);
+
+                    // Handshake to Server
+                    networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Server, !MyTurn);
+
+                    Debug.Log("Correct Ownership received! Handshake send to Server!");
+                }
+                else
+                {
+                    Debug.Log("Waiting for Ownership (currently: "+BallManager.instance.AmIOwnerOfBall()+") to change to my Turn state (currently: "+MyTurn+") ...");
+                }
+            }
+
+            return;
+        }
+
+        // ========== Server code ==========
 
         // async init (Start) required because of networking
         if (!bInit)
@@ -92,7 +140,7 @@ public class GameManager : GameManagerBehavior
             {
                 Debug.Log("Space Hit: " + currentTry);
                 //currentTry++; 
-                SetTurn(!myTurn);
+                SetTurn(!MyTurn);
             }
 
             networkObject.playedTime += Time.deltaTime;
@@ -110,9 +158,9 @@ public class GameManager : GameManagerBehavior
 
     void Reset()
     {
-        if (!IsServer()) return;
+        if (!IsServer) return;
         
-        myTurn = true;
+        MyTurn = true;
         gameState = EGameState.Pause;
         countdownTimer = StartCountdown;
         currentTry = 0;
@@ -121,14 +169,15 @@ public class GameManager : GameManagerBehavior
         networkObject.playedTime = 0;
         
         CupManager.instance.ResetAllCups();
-        BallManager.instance.SetPositionToBallHolder(myTurn);
+        BallManager.instance.SetPositionToBallHolder(MyTurn);
+        BallManager.instance.SetBallOwnership(MyTurn);
         
         Debug.Log("Game Resetted!");
     }
 
     void CheckGameOver()
     {
-        if (!IsServer()) return;
+        if (!IsServer) return;
         
         if (gameState != EGameState.Running)
         {
@@ -148,11 +197,6 @@ public class GameManager : GameManagerBehavior
         }
     }
 
-    public bool IsServer()
-    {
-        return networkObject != null ? networkObject.IsServer : false;
-    }
-
     public bool EnemyIsConnected()
     {
         return NetworkManager.Instance.Networker.Players.Count >= 2;
@@ -160,7 +204,7 @@ public class GameManager : GameManagerBehavior
 
     public void BallFellInCup(CupController cup)
     {
-        if (!IsServer() || gameState != EGameState.Running) return;
+        if (!IsServer || gameState != EGameState.Running || waitForHandshake) return;
         
         //Zugehörige Gruppe
         //Aktueller Becher
@@ -170,7 +214,7 @@ public class GameManager : GameManagerBehavior
         Debug.Log("In Ball Fell In Cup");
         
         //Here has also to happend the update for the points and so on...
-        if (myTurn)
+        if (MyTurn)
         {
             if (CupManager.instance.IsMyCup(cup))
             {
@@ -204,20 +248,36 @@ public class GameManager : GameManagerBehavior
 
     public void BallFellBeside()
     {
-        if (!IsServer() || gameState != EGameState.Running) return;
+        if (waitForHandshake)
+        {
+            Debug.LogWarning("Ignoring BallFellBeside because we're waiting for the Handshake!");
+            return;
+        }
 
-        Debug.Log("Someone can't aim, lol");
+        if (!IsServer || gameState != EGameState.Running) return;
+
+        if (MyTurn)
+        {
+            Debug.Log("I can't aim...");
+        }
+        else
+        {
+            Debug.Log("The ENEMY can't aim!");
+        }
         NextTry();
     }
 
     private void NextTry()
     {
-        if (!IsServer()) return;
+        if (!IsServer) return;
         
         currentTry++;
         if (currentTry >= MaxTries)
         {
-            SetTurn(!myTurn);
+            // SetTurn will set currentTry back to 0 !
+            // This has the advantage of being able to switch the turn 
+            // mid game (if wished for some reason, e.g. space bar)
+            SetTurn(!MyTurn);
         }
         else
         {
@@ -227,16 +287,19 @@ public class GameManager : GameManagerBehavior
     
     private void SetTurn(bool IamNext)
     {
-        if (!IsServer()) return;
+        if (!IsServer) return;
       
         currentTry = 0;
-        CupManager.instance.StandActiveCupsBackToOringPos(myTurn);
-        myTurn = IamNext;
-        Debug.Log("It's " + (myTurn ? "my Turn" : "the enemys Turn") + " Turn!");
+        MyTurn = IamNext;
+        Debug.Log("It's " + (MyTurn ? "my" : "the ENEMYS") + " Turn!");
 
-        BallManager.instance.SetPositionToBallHolder(myTurn);
+        CupManager.instance.StandActiveCupsBackToOringPos(MyTurn);
+        BallManager.instance.SetBallState(BallController.EBallState.Pause);
+        waitForHandshake = true;
+        BallManager.instance.SetPositionToBallHolder(MyTurn);
+        BallManager.instance.SetBallOwnership(MyTurn);
 
-        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.All, !myTurn);
+        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Others, !MyTurn);
 
         // TODO: Show the player some indication it's his turn!
     }
@@ -259,9 +322,31 @@ public class GameManager : GameManagerBehavior
     // RPC, do not call directly!
     public override void PlayerTurn(RpcArgs args)
     {
-        if (IsServer()) return;
+        // NOTE: incoming Turn value should always be from our point of view!
+        bool incomingTurn = args.GetNext<bool>();
 
-        myTurn = args.GetNext<bool>();
+        if (IsServer)
+        {
+            if (incomingTurn == MyTurn)
+            {
+                // Handshake successfull!
+                waitForHandshake = false;
+                BallManager.instance.SetBallState(BallController.EBallState.WaitForGrab);
+                Debug.Log("Turn Handshake successfull! myTurn: " + MyTurn);
+            }
+            else
+            {
+                Debug.LogError("Handshake mismatch! My turn: " + MyTurn + " while the Client thinks: " + incomingTurn);
+            }
+        }
+        else
+        {
+            BallManager.instance.SetBallState(BallController.EBallState.Pause);
+            MyTurn = incomingTurn;
+            waitForHandshake = true;
+
+            Debug.Log("Receiving Turn - MyTurn: " + MyTurn);
+        }
 
         // TODO: Show the player some indication it's his turn!
     }
@@ -269,7 +354,7 @@ public class GameManager : GameManagerBehavior
     // RPC, do not call directly!
     public override void GameOver(RpcArgs args)
     {
-        if (IsServer()) return;
+        if (IsServer) return;
 
         // TODO: Show some end screen etc...
         throw new System.NotImplementedException();

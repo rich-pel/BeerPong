@@ -6,7 +6,6 @@ public class BallManager : MonoBehaviour
     #region Singleton
 
     public static BallManager instance;
-
     private void Awake()
     {
         instance = this;
@@ -15,9 +14,9 @@ public class BallManager : MonoBehaviour
     #endregion
 
     [SerializeField] private BallController throwableBall;
-    public GameObject playersBallHolderArea;
-    public GameObject enemysBallHolderArea;
-    public int moveableTimeForBall = 10;
+    [SerializeField] private GameObject playersBallHolderArea;
+    [SerializeField] private GameObject enemysBallHolderArea;
+    [SerializeField] private int moveableTimeForBall = 10;
 
     private float timeOutForBall;
     private bool ballTimeIsTracked = false;
@@ -32,7 +31,14 @@ public class BallManager : MonoBehaviour
     void Start()
     {
         // deactivate whole script if we're not server
-        gameObject.SetActive(GameManager.instance.IsServer());
+        gameObject.SetActive(GameManager.instance.IsServer);
+
+        if (!throwableBall)
+        {
+            Debug.LogError("throwableBall is not set!");
+            return;
+        }
+
         ballBody = throwableBall.GetComponent<Rigidbody>();
     }
 
@@ -51,38 +57,53 @@ public class BallManager : MonoBehaviour
         }
     }
 
+    public void SetBallState(BallController.EBallState NewState)
+    {
+        throwableBall.SetState(NewState);
+    }
+
     // Should only be called by the Server!
     public void SetPositionToBallHolder(bool myTurn)
     {
+        // if we're Client, the enemys BallHolderArea is our Area
+        if (GameManager.instance.IsClient) myTurn = !myTurn;
+
         if (myTurn)
         {
+            throwableBall.SetState(BallController.EBallState.WaitForGrab);
+            throwableBall.gameObject.SetActive(false);
             throwableBall.transform.position = playersBallHolderArea.transform.position;
-            ballBody.velocity = Vector3.zero;
-            ballBody.angularVelocity = Vector3.zero;
-            Debug.Log("I have the Ball");
+            throwableBall.gameObject.SetActive(true);
+            Debug.Log(GameManager.instance.IsClient ? "The ENEMY has the Ball" : "I have the Ball");
         }
         else
         {
+            throwableBall.SetState(BallController.EBallState.WaitForGrab);
+            throwableBall.gameObject.SetActive(false);
             throwableBall.transform.position = enemysBallHolderArea.transform.position;
-            ballBody.velocity = Vector3.zero;
-            ballBody.angularVelocity = Vector3.zero;
-            Debug.Log("The enemy has the Ball");
+            throwableBall.gameObject.SetActive(true);
+            Debug.Log(GameManager.instance.IsClient ? "I have the Ball" : "The ENEMY has the Ball");
         }
 
-        // must be done before changing ownership!
-        // TODO: doesn't seem to work as intended
-        throwableBall.UpdateNetworkPosition();
+        ballBody.velocity = Vector3.zero;
+        ballBody.angularVelocity = Vector3.zero;
+    }
 
-        if (throwableBall.networkObject != null && NetworkManager.Instance.Networker.Players.Count >= 2)
+    public void SetBallOwnership(bool myBall)
+    {
+        if (GameManager.instance.IsServer && GameManager.instance.EnemyIsConnected())
         {
-            throwableBall.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[myTurn ? 0 : 1]);
+            throwableBall.SetOwnership(myBall);
         }
     }
 
+    public bool AmIOwnerOfBall()
+    {
+        return throwableBall.networkObject.IsOwner;
+    }
 
     public void BallIsGrabbed()
     {
-        Debug.Log("Ball is Grabbed");
         ballTimeIsTracked = true;
         timeOutForBall = Time.time + 10;
         GameManager.instance.BallWasGrabbed();
@@ -107,14 +128,12 @@ public class BallManager : MonoBehaviour
             GameManager.instance.BallFellBeside();
             AudioManager.instance.Play("BallHitGround");
         }
-
         else if (gameObjectTag.Equals("Wall"))
         {
             GameManager.instance.BallFellBeside();
 
             AudioManager.instance.Play("BallHitWall");
         }
-
         else if (gameObjectTag.Equals("Table"))
         {
             GameManager.instance.BallFellBeside();
@@ -124,7 +143,6 @@ public class BallManager : MonoBehaviour
             if (audioCountUp >= ballDippingMax)
                 audioCountUp = 0;
         }
-
         else if (gameObjectTag.Equals("Counter"))
         {
             GameManager.instance.BallFellBeside();
