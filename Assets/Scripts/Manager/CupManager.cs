@@ -22,23 +22,10 @@ public class CupManager : MonoBehaviour
     [SerializeField] private CupBundleController enemysCupBundle;
 
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
     public void DeactivateACoupInAGroup(int cupNumber, bool playersCup)
     {
-        if (playersCup)
-            DeactivateACoupInABundle(cupNumber, playersCupBundle);
-        else
-            DeactivateACoupInABundle(cupNumber, enemysCupBundle);
-            
+        DeactivateACoupInABundle(cupNumber, playersCup ? playersCupBundle : enemysCupBundle);
     }
 
     private static void DeactivateACoupInABundle(int cupNumber, CupBundleController cupBundleController)
@@ -48,10 +35,7 @@ public class CupManager : MonoBehaviour
 
     public void ReGroupACupGroup(bool playersCup)
     {
-        if (playersCup)
-            ReGroupACupBundle(playersCupBundle);
-        else
-            ReGroupACupBundle(enemysCupBundle);
+        ReGroupACupBundle(playersCup ? playersCupBundle : enemysCupBundle);
     }
 
     private void ReGroupACupBundle(CupBundleController cupBundle)

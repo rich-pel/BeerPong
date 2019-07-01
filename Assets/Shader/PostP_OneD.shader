@@ -90,7 +90,6 @@
 				col = col / sum;
 				return col;
 			}
-
 			ENDCG
 		}
 	}

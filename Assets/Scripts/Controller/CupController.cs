@@ -2,19 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class     CupController : MonoBehaviour
+public class CupController : MonoBehaviour
 {
 
     public bool fliped = false;
     private float _criticalAngle = 45.0f;
 
+    public float Angle { get; set; }
+    public bool Empty { get; internal set; }
+
+    [SerializeField] private int cupPositionInGroup;
+
     // Update is called once per frame
     void Update()
     {
         // get angle in Range [0, 180]
-        float _angle = Vector3.Angle(Vector3.up, transform.forward);
+        Angle = Vector3.Angle(Vector3.up, transform.forward);
 
-        if (_angle > _criticalAngle)
+        if (Angle > _criticalAngle)
             fliped = true;
     }
 
