@@ -6,18 +6,18 @@ public class BallManager : MonoBehaviour
     #region Singleton
 
     public static BallManager instance;
-    public bool Sync
-    {
-        get { return throwableBall.Sync; }
-        set { throwableBall.Sync = value; }
-    }
-
     private void Awake()
     {
         instance = this;
     }
 
     #endregion
+
+    public bool Sync
+    {
+        get { return throwableBall.Sync; }
+        set { throwableBall.Sync = value; }
+    }
 
     [SerializeField] private BallController throwableBall;
     [SerializeField] private GameObject playersBallHolderArea;
@@ -65,12 +65,20 @@ public class BallManager : MonoBehaviour
 
         if (myTurn)
         {
-            ballBody.MovePosition(playersBallHolderArea.transform.position);
+            throwableBall.gameObject.SetActive(false);
+            throwableBall.transform.position = playersBallHolderArea.transform.position;
+            //ballBody.MovePosition(playersBallHolderArea.transform.position);
+            throwableBall.gameObject.SetActive(true);
+            //throwableBall.ResetInterpolation();
             Debug.Log(GameManager.instance.IsClient ? "The ENEMY has the Ball" : "I have the Ball");
         }
         else
         {
-            ballBody.MovePosition(enemysBallHolderArea.transform.position);
+            throwableBall.gameObject.SetActive(false);
+            throwableBall.transform.position = enemysBallHolderArea.transform.position;
+            //ballBody.MovePosition(enemysBallHolderArea.transform.position);
+            throwableBall.gameObject.SetActive(true);
+            //throwableBall.ResetInterpolation();
             Debug.Log(GameManager.instance.IsClient ? "I have the Ball" : "The ENEMY has the Ball");
         }
 

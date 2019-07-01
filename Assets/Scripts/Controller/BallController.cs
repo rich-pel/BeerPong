@@ -14,8 +14,16 @@ public class BallController : SyncedBallBehavior
         set
         {
             _sync = value;
-            body.isKinematic = !value;
+            networkObject.positionInterpolation.Enabled = value;
+            //body.isKinematic = !value;
+
+            Debug.Log("Set Ball Sync to: " + value);
         }
+    }
+    public bool Interpolate
+    {
+        get { return networkObject.positionInterpolation.Enabled; }
+        set { networkObject.positionInterpolation.Enabled = value; }
     }
     Throwable throwable;
     Rigidbody body;
@@ -42,6 +50,20 @@ public class BallController : SyncedBallBehavior
         {
             UpdateNetworkPosition();
         }
+    }
+
+    // Called by SteamVR (see inspector)
+    public void OnPickUp()
+    {
+
+    }
+
+    public void ResetInterpolation()
+    {
+        networkObject.positionInterpolation.current = body.position;
+        networkObject.positionInterpolation.target = body.position;
+        networkObject.positionInterpolation.LerpT = 0;
+        networkObject.positionInterpolation.Timestep = 0;
     }
 
     public void SetOwnership(bool IOwnThis)

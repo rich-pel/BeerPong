@@ -310,8 +310,8 @@ public class GameManager : GameManagerBehavior
             if (incomingTurn == myTurn)
             {
                 // Handshake successfull!
-                BallManager.instance.Sync = true;
                 waitForHandshake = false;
+                BallManager.instance.Sync = true;
                 Debug.Log("Turn Handshake successfull! myTurn: " + myTurn);
             }
             else
