@@ -222,7 +222,7 @@ public class GameManager : GameManagerBehavior
             }
             else
             {
-                cup.Deactivate();
+                cup.SetActive(false);
                 networkObject.hostPoints++;
                 Debug.Log("I scored a Point! My Points: " + networkObject.hostPoints);
                 CheckGameOver();
@@ -236,7 +236,7 @@ public class GameManager : GameManagerBehavior
             }
             else
             {
-                cup.Deactivate();
+                cup.SetActive(false);
                 networkObject.clientPoints++;
                 Debug.Log("The Enemy scored a Point! Enemy Points: " + networkObject.clientPoints);
                 CheckGameOver();

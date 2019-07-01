@@ -47,6 +47,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 						availableCallback = true;
 						obj = new SyncedBallNetworkObject(networker, id, frame);
 						break;
+					case SyncedCupNetworkObject.IDENTITY:
+						availableCallback = true;
+						obj = new SyncedCupNetworkObject(networker, id, frame);
+						break;
 					case TestNetworkObject.IDENTITY:
 						availableCallback = true;
 						obj = new TestNetworkObject(networker, id, frame);

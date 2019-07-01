@@ -13,23 +13,6 @@ public class CupBundleController : MonoBehaviour
             cup.father = this;
         }
     }
-    
-    public void DeactivateCup(CupController Cup)
-    {
-        if (!Cup)
-        {
-            Debug.LogError("Tried to deactivate Cup NULL!");
-            return;
-        }
-        
-        if (!cupsInGroup.Contains(Cup))
-        {
-            Debug.LogError("Tried to deactivate Cup '"+Cup+"' not present in our group!");
-            return;
-        }
-        
-        Cup.Deactivate();
-    }
 
     public int GetNumberOfActiveCups()
     {
@@ -44,22 +27,14 @@ public class CupBundleController : MonoBehaviour
         return cupsActive;
     }
 
-    public void ResetAllCups()
+    public void ResetAllCups(bool activeOnly)
     {
         foreach (CupController cup in cupsInGroup)
         {
-            cup.Reset();
-        }
-    }
+            if (activeOnly && !cup.gameObject.activeInHierarchy) continue;
 
-    public void StandUpCupsAgain()
-    {
-        foreach (CupController cup in cupsInGroup)
-        {
-            if (cup.gameObject.activeInHierarchy)
-            {
-                cup.ReturnToOriginPosition();
-            }
+            cup.SetActive(true);
+            cup.Reset();
         }
     }
 }
