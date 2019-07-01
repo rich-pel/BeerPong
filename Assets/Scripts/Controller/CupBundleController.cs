@@ -51,4 +51,15 @@ public class CupBundleController : MonoBehaviour
             cup.Reset();
         }
     }
+
+    public void StandUpCupsAgain()
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (cup.gameObject.activeInHierarchy)
+            {
+                cup.ReturnToOriginPosition();
+            }
+        }
+    }
 }

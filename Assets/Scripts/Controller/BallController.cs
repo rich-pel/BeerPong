@@ -44,6 +44,16 @@ public class BallController : SyncedBallBehavior
         {
             UpdateNetworkPosition();
         }
+
+        if (BallFallsOutOfTheRoom())
+        {
+            GameManager.instance.BallFellBeside();
+        }
+    }
+
+    private bool BallFallsOutOfTheRoom()
+    {
+        return BallManager.instance.BallFallsOutOfTheRoom(gameObject.transform.position);
     }
 
     public void SetState(EBallState NewState)

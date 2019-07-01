@@ -14,7 +14,7 @@ public class CupController : MonoBehaviour
         homePosition = transform.position;
         body = GetComponent<Rigidbody>(); // no check required because of RequireComponent
     }
-    
+
     public void Deactivate()
     {
         gameObject.SetActive(false);
@@ -27,7 +27,10 @@ public class CupController : MonoBehaviour
         body.velocity = Vector3.zero;
         gameObject.SetActive(true);
     }
+
+    public void ReturnToOriginPosition()
+    {
+        if (gameObject.activeInHierarchy)
+            transform.position = homePosition;
+    }
 }
-
-
-

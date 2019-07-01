@@ -31,6 +31,8 @@ public class GameManager : GameManagerBehavior
     public const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
     [SerializeField] private int MaxTries = 1;
     [SerializeField] private float StartCountdown = 3.0f;
+
+    [SerializeField] private GameObject RoomGround;
     
     public EGameState gameState { get; private set; }
     
@@ -291,6 +293,7 @@ public class GameManager : GameManagerBehavior
         MyTurn = IamNext;
         Debug.Log("It's " + (MyTurn ? "my" : "the ENEMYS") + " Turn!");
 
+        CupManager.instance.StandActiveCupsBackToOringPos(MyTurn);
         BallManager.instance.SetBallState(BallController.EBallState.Pause);
         waitForHandshake = true;
         BallManager.instance.SetPositionToBallHolder(MyTurn);
@@ -361,5 +364,10 @@ public class GameManager : GameManagerBehavior
     {
         // TODO: this is dead right now...
         //currentTry++;
+    }
+
+    public Vector3 GetGroundPosition()
+    {
+        return RoomGround.gameObject.transform.position;
     }
 }
