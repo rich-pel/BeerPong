@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class MultiplayerMenu : MonoBehaviour
 {
+    const int MAX_CONNECTIONS = 2; // includes the server
+
     public InputField ipAddress = null;
 	public InputField portNumber = null;
 	public bool DontChangeSceneOnConnect = false;
@@ -137,12 +139,12 @@ public class MultiplayerMenu : MonoBehaviour
 	{
 		if (useTCP)
 		{
-			server = new TCPServer(64);
+			server = new TCPServer(MAX_CONNECTIONS);
 			((TCPServer)server).Connect();
 		}
 		else
 		{
-			server = new UDPServer(64);
+			server = new UDPServer(MAX_CONNECTIONS);
 
 			if (natServerHost.Trim().Length == 0)
 				((UDPServer)server).Connect(ipAddress.text, ushort.Parse(portNumber.text));

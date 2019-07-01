@@ -13,12 +13,6 @@ public class BallManager : MonoBehaviour
 
     #endregion
 
-    public bool Sync
-    {
-        get { return throwableBall.Sync; }
-        set { throwableBall.Sync = value; }
-    }
-
     [SerializeField] private BallController throwableBall;
     [SerializeField] private GameObject playersBallHolderArea;
     [SerializeField] private GameObject enemysBallHolderArea;
@@ -57,6 +51,11 @@ public class BallManager : MonoBehaviour
         }
     }
 
+    public void SetBallState(BallController.EBallState NewState)
+    {
+        throwableBall.SetState(NewState);
+    }
+
     // Should only be called by the Server!
     public void SetPositionToBallHolder(bool myTurn)
     {
@@ -65,20 +64,18 @@ public class BallManager : MonoBehaviour
 
         if (myTurn)
         {
+            throwableBall.SetState(BallController.EBallState.WaitForGrab);
             throwableBall.gameObject.SetActive(false);
             throwableBall.transform.position = playersBallHolderArea.transform.position;
-            //ballBody.MovePosition(playersBallHolderArea.transform.position);
             throwableBall.gameObject.SetActive(true);
-            //throwableBall.ResetInterpolation();
             Debug.Log(GameManager.instance.IsClient ? "The ENEMY has the Ball" : "I have the Ball");
         }
         else
         {
+            throwableBall.SetState(BallController.EBallState.WaitForGrab);
             throwableBall.gameObject.SetActive(false);
             throwableBall.transform.position = enemysBallHolderArea.transform.position;
-            //ballBody.MovePosition(enemysBallHolderArea.transform.position);
             throwableBall.gameObject.SetActive(true);
-            //throwableBall.ResetInterpolation();
             Debug.Log(GameManager.instance.IsClient ? "I have the Ball" : "The ENEMY has the Ball");
         }
 
@@ -101,7 +98,6 @@ public class BallManager : MonoBehaviour
 
     public void BallIsGrabbed()
     {
-        Debug.Log("Ball is Grabbed");
         ballTimeIsTracked = true;
         timeOutForBall = Time.time + 10;
         GameManager.instance.BallWasGrabbed();
@@ -126,15 +122,13 @@ public class BallManager : MonoBehaviour
             GameManager.instance.BallFellBeside();
             AudioManager.instance.Play("BallHitGround");
         }
-
         else if (gameObjectTag.Equals("Wall"))
         {
             GameManager.instance.BallFellBeside();
 
             AudioManager.instance.Play("BallHitWall");
         }
-
-        /*else if (gameObjectTag.Equals("Table"))
+        else if (gameObjectTag.Equals("Table"))
         {
             GameManager.instance.BallFellBeside();
 
@@ -142,8 +136,7 @@ public class BallManager : MonoBehaviour
             AudioManager.instance.Play("BallHitTable" + audioCountUp);
             if (audioCountUp >= ballDippingMax)
                 audioCountUp = 0;
-        }*/
-
+        }
         else if (gameObjectTag.Equals("Counter"))
         {
             GameManager.instance.BallFellBeside();

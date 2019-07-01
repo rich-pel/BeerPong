@@ -34,7 +34,8 @@ public class GameManager : GameManagerBehavior
     
     public EGameState gameState { get; private set; }
     
-    private bool myTurn = false;
+    public bool MyTurn { get; private set; }
+
     private bool bInit = false;
     private int currentTry = 0;
     
@@ -49,6 +50,22 @@ public class GameManager : GameManagerBehavior
         {
             Reset();
             gameState = EGameState.WaitingForConnection;
+
+            NetworkManager.Instance.Networker.playerDisconnected += (NetworkingPlayer player, NetWorker sender) =>
+            {
+                Debug.Log("Player " + player.Ip + " disconnected!");
+            };
+
+            NetworkManager.Instance.Networker.playerRejected += (NetworkingPlayer player, NetWorker sender) =>
+            {
+                Debug.Log("Player " + player.Ip + " rejected!");
+            };
+
+            NetworkManager.Instance.Networker.playerAccepted += (NetworkingPlayer player, NetWorker sender) => 
+            {
+                Debug.Log("Player " + player.Ip + " accepted! Sending current turn...");
+                networkObject.SendRpc(player, RPC_PLAYER_TURN, MyTurn);
+            };
         }
     }
 
@@ -68,20 +85,20 @@ public class GameManager : GameManagerBehavior
         {
             if (waitForHandshake)
             {
-                if (myTurn == BallManager.instance.AmIOwnerOfBall())
+                if (MyTurn == BallManager.instance.AmIOwnerOfBall())
                 {
                     waitForHandshake = false;
-                    BallManager.instance.SetPositionToBallHolder(myTurn);
-                    BallManager.instance.Sync = true;
+                    BallManager.instance.SetPositionToBallHolder(MyTurn);
+                    BallManager.instance.SetBallState(BallController.EBallState.WaitForGrab);
 
                     // Handshake to Server
-                    networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Server, !myTurn);
+                    networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Server, !MyTurn);
 
                     Debug.Log("Correct Ownership received! Handshake send to Server!");
                 }
                 else
                 {
-                    Debug.Log("Waiting for Ownership (currently: "+BallManager.instance.AmIOwnerOfBall()+") to change to my Turn state (currently: "+myTurn+") ...");
+                    Debug.Log("Waiting for Ownership (currently: "+BallManager.instance.AmIOwnerOfBall()+") to change to my Turn state (currently: "+MyTurn+") ...");
                 }
             }
 
@@ -121,7 +138,7 @@ public class GameManager : GameManagerBehavior
             {
                 Debug.Log("Space Hit: " + currentTry);
                 //currentTry++; 
-                SetTurn(!myTurn);
+                SetTurn(!MyTurn);
             }
 
             networkObject.playedTime += Time.deltaTime;
@@ -141,7 +158,7 @@ public class GameManager : GameManagerBehavior
     {
         if (!IsServer) return;
         
-        myTurn = true;
+        MyTurn = true;
         gameState = EGameState.Pause;
         countdownTimer = StartCountdown;
         currentTry = 0;
@@ -150,8 +167,8 @@ public class GameManager : GameManagerBehavior
         networkObject.playedTime = 0;
         
         CupManager.instance.ResetAllCups();
-        BallManager.instance.SetPositionToBallHolder(myTurn);
-        BallManager.instance.SetBallOwnership(myTurn);
+        BallManager.instance.SetPositionToBallHolder(MyTurn);
+        BallManager.instance.SetBallOwnership(MyTurn);
         
         Debug.Log("Game Resetted!");
     }
@@ -195,7 +212,7 @@ public class GameManager : GameManagerBehavior
         Debug.Log("In Ball Fell In Cup");
         
         //Here has also to happend the update for the points and so on...
-        if (myTurn)
+        if (MyTurn)
         {
             if (CupManager.instance.IsMyCup(cup))
             {
@@ -237,7 +254,7 @@ public class GameManager : GameManagerBehavior
 
         if (!IsServer || gameState != EGameState.Running) return;
 
-        if (myTurn)
+        if (MyTurn)
         {
             Debug.Log("I can't aim...");
         }
@@ -258,7 +275,7 @@ public class GameManager : GameManagerBehavior
             // SetTurn will set currentTry back to 0 !
             // This has the advantage of being able to switch the turn 
             // mid game (if wished for some reason, e.g. space bar)
-            SetTurn(!myTurn);
+            SetTurn(!MyTurn);
         }
         else
         {
@@ -271,15 +288,15 @@ public class GameManager : GameManagerBehavior
         if (!IsServer) return;
       
         currentTry = 0;
-        myTurn = IamNext;
-        Debug.Log("It's " + (myTurn ? "my" : "the ENEMYS") + " Turn!");
+        MyTurn = IamNext;
+        Debug.Log("It's " + (MyTurn ? "my" : "the ENEMYS") + " Turn!");
 
-        BallManager.instance.Sync = false;
+        BallManager.instance.SetBallState(BallController.EBallState.Pause);
         waitForHandshake = true;
-        BallManager.instance.SetPositionToBallHolder(myTurn);
-        BallManager.instance.SetBallOwnership(myTurn);
+        BallManager.instance.SetPositionToBallHolder(MyTurn);
+        BallManager.instance.SetBallOwnership(MyTurn);
 
-        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Others, !myTurn);
+        networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Others, !MyTurn);
 
         // TODO: Show the player some indication it's his turn!
     }
@@ -307,25 +324,25 @@ public class GameManager : GameManagerBehavior
 
         if (IsServer)
         {
-            if (incomingTurn == myTurn)
+            if (incomingTurn == MyTurn)
             {
                 // Handshake successfull!
                 waitForHandshake = false;
-                BallManager.instance.Sync = true;
-                Debug.Log("Turn Handshake successfull! myTurn: " + myTurn);
+                BallManager.instance.SetBallState(BallController.EBallState.WaitForGrab);
+                Debug.Log("Turn Handshake successfull! myTurn: " + MyTurn);
             }
             else
             {
-                Debug.LogError("Handshake mismatch! My turn: " + myTurn + " while the Client thinks: " + incomingTurn);
+                Debug.LogError("Handshake mismatch! My turn: " + MyTurn + " while the Client thinks: " + incomingTurn);
             }
         }
         else
         {
-            BallManager.instance.Sync = false;
-            myTurn = incomingTurn;
+            BallManager.instance.SetBallState(BallController.EBallState.Pause);
+            MyTurn = incomingTurn;
             waitForHandshake = true;
 
-            Debug.Log("Receiving Turn - MyTurn: " + myTurn);
+            Debug.Log("Receiving Turn - MyTurn: " + MyTurn);
         }
 
         // TODO: Show the player some indication it's his turn!
