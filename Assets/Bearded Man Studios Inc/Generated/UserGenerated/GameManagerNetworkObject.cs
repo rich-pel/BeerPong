@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedInterpol("{\"inter\":[0,0,0]")]
+	[GeneratedInterpol("{\"inter\":[0,0,0,0]")]
 	public partial class GameManagerNetworkObject : NetworkObject
 	{
 		public const int IDENTITY = 9;
@@ -108,6 +108,37 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (playedTimeChanged != null) playedTimeChanged(_playedTime, timestep);
 			if (fieldAltered != null) fieldAltered("playedTime", _playedTime, timestep);
 		}
+		[ForgeGeneratedField]
+		private byte _gameState;
+		public event FieldEvent<byte> gameStateChanged;
+		public Interpolated<byte> gameStateInterpolation = new Interpolated<byte>() { LerpT = 0f, Enabled = false };
+		public byte gameState
+		{
+			get { return _gameState; }
+			set
+			{
+				// Don't do anything if the value is the same
+				if (_gameState == value)
+					return;
+
+				// Mark the field as dirty for the network to transmit
+				_dirtyFields[0] |= 0x8;
+				_gameState = value;
+				hasDirtyFields = true;
+			}
+		}
+
+		public void SetgameStateDirty()
+		{
+			_dirtyFields[0] |= 0x8;
+			hasDirtyFields = true;
+		}
+
+		private void RunChange_gameState(ulong timestep)
+		{
+			if (gameStateChanged != null) gameStateChanged(_gameState, timestep);
+			if (fieldAltered != null) fieldAltered("gameState", _gameState, timestep);
+		}
 
 		protected override void OwnershipChanged()
 		{
@@ -120,6 +151,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			hostPointsInterpolation.current = hostPointsInterpolation.target;
 			clientPointsInterpolation.current = clientPointsInterpolation.target;
 			playedTimeInterpolation.current = playedTimeInterpolation.target;
+			gameStateInterpolation.current = gameStateInterpolation.target;
 		}
 
 		public override int UniqueIdentity { get { return IDENTITY; } }
@@ -129,6 +161,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			UnityObjectMapper.Instance.MapBytes(data, _hostPoints);
 			UnityObjectMapper.Instance.MapBytes(data, _clientPoints);
 			UnityObjectMapper.Instance.MapBytes(data, _playedTime);
+			UnityObjectMapper.Instance.MapBytes(data, _gameState);
 
 			return data;
 		}
@@ -147,6 +180,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			playedTimeInterpolation.current = _playedTime;
 			playedTimeInterpolation.target = _playedTime;
 			RunChange_playedTime(timestep);
+			_gameState = UnityObjectMapper.Instance.Map<byte>(payload);
+			gameStateInterpolation.current = _gameState;
+			gameStateInterpolation.target = _gameState;
+			RunChange_gameState(timestep);
 		}
 
 		protected override BMSByte SerializeDirtyFields()
@@ -160,6 +197,8 @@ namespace BeardedManStudios.Forge.Networking.Generated
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _clientPoints);
 			if ((0x4 & _dirtyFields[0]) != 0)
 				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _playedTime);
+			if ((0x8 & _dirtyFields[0]) != 0)
+				UnityObjectMapper.Instance.MapBytes(dirtyFieldsData, _gameState);
 
 			// Reset all the dirty fields
 			for (int i = 0; i < _dirtyFields.Length; i++)
@@ -215,6 +254,19 @@ namespace BeardedManStudios.Forge.Networking.Generated
 					RunChange_playedTime(timestep);
 				}
 			}
+			if ((0x8 & readDirtyFlags[0]) != 0)
+			{
+				if (gameStateInterpolation.Enabled)
+				{
+					gameStateInterpolation.target = UnityObjectMapper.Instance.Map<byte>(data);
+					gameStateInterpolation.Timestep = timestep;
+				}
+				else
+				{
+					_gameState = UnityObjectMapper.Instance.Map<byte>(data);
+					RunChange_gameState(timestep);
+				}
+			}
 		}
 
 		public override void InterpolateUpdate()
@@ -236,6 +288,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			{
 				_playedTime = (float)playedTimeInterpolation.Interpolate();
 				//RunChange_playedTime(playedTimeInterpolation.Timestep);
+			}
+			if (gameStateInterpolation.Enabled && !gameStateInterpolation.current.UnityNear(gameStateInterpolation.target, 0.0015f))
+			{
+				_gameState = (byte)gameStateInterpolation.Interpolate();
+				//RunChange_gameState(gameStateInterpolation.Timestep);
 			}
 		}
 
