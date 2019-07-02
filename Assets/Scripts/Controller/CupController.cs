@@ -50,11 +50,15 @@ public class CupController : SyncedCupBehavior
         {
             networkObject.position = body.position;
             networkObject.rotation = body.rotation;
+            networkObject.velocity = body.velocity;
+            networkObject.angularVelocity = body.angularVelocity;
         }
         else
         {
             body.MovePosition(networkObject.position);
             body.MoveRotation(networkObject.rotation);
+            body.velocity = networkObject.velocity;
+            body.angularVelocity = networkObject.angularVelocity;
         }
     }
 

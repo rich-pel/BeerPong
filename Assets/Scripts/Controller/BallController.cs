@@ -126,14 +126,15 @@ public class BallController : SyncedBallBehavior
         {
             body.useGravity = true;
             networkObject.position = body.position;
+            networkObject.velocity = body.velocity;
             throwable.attachmentFlags = Hand.AttachmentFlags.VelocityMovement;
         }
         else
         {
             body.useGravity = false;
-            body.velocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
             body.MovePosition(networkObject.position);
+            body.velocity = networkObject.velocity;
+            body.angularVelocity = Vector3.zero;
             throwable.attachmentFlags = 0;
         }
     }
