@@ -304,14 +304,14 @@ public class GameManager : GameManagerBehavior
         // TODO: Show the player some indication it's his turn!
     }
 
-    public int GetPlayerPoints()
+    public int GetRedPoints()
     {
-        return networkObject != null ? networkObject.IsServer ? networkObject.hostPoints : networkObject.clientPoints : 0;
+        return networkObject != null ? networkObject.hostPoints : 0;
     }
 
-    public int GetEnemyPoints()
+    public int GetBluePoints()
     {
-        return networkObject != null ? networkObject.IsServer ? networkObject.clientPoints : networkObject.hostPoints : 0;
+        return networkObject != null ? networkObject.clientPoints : 0;
     }
 
     public float GetCurrentPlayedTime()
