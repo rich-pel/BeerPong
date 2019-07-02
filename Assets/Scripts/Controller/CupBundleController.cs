@@ -13,23 +13,6 @@ public class CupBundleController : MonoBehaviour
             cup.father = this;
         }
     }
-    
-    public void DeactivateCup(CupController Cup)
-    {
-        if (!Cup)
-        {
-            Debug.LogError("Tried to deactivate Cup NULL!");
-            return;
-        }
-        
-        if (!cupsInGroup.Contains(Cup))
-        {
-            Debug.LogError("Tried to deactivate Cup '"+Cup+"' not present in our group!");
-            return;
-        }
-        
-        Cup.Deactivate();
-    }
 
     public int GetNumberOfActiveCups()
     {
@@ -44,21 +27,44 @@ public class CupBundleController : MonoBehaviour
         return cupsActive;
     }
 
-    public void ResetAllCups()
-    {
-        foreach (CupController cup in cupsInGroup)
-        {
-            cup.Reset();
-        }
-    }
-
-    public void StandUpCupsAgain()
+    public void SetCupsOwnership(bool IOwnThem)
     {
         foreach (CupController cup in cupsInGroup)
         {
             if (cup.gameObject.activeInHierarchy)
             {
-                cup.ReturnToOriginPosition();
+                cup.SetOwnership(IOwnThem);
+            }
+        }
+    }
+
+    public bool AmIOwnerOfCups()
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (cup.gameObject.activeInHierarchy && !cup.networkObject.IsOwner) return false;
+        }
+        return true;
+    }
+
+    public void ResetCups(bool activeOnly)
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (activeOnly && !cup.gameObject.activeInHierarchy) continue;
+
+            //cup.SetActive(true);
+            cup.Reset();
+        }
+    }
+
+    public void SyncCups(bool sync)
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (cup.gameObject.activeInHierarchy)
+            {
+                cup.SetSync(sync);
             }
         }
     }

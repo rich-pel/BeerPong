@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using BeardedManStudios.Forge.Networking.Generated;
+using BeardedManStudios.Forge.Networking.Unity;
+using BeardedManStudios.Forge.Networking;
 using UnityEngine;
 
 public class CupManager : MonoBehaviour
@@ -41,17 +41,37 @@ public class CupManager : MonoBehaviour
         return Cup.father == playersCupBundle;
     }
 
-    public void ResetAllCups()
+    //public void DeactivateCup(CupController Cup)
+    //{
+    //    if (Cup == null)
+    //    {
+    //        Debug.LogError("Tried to deactivate NULL Cup!");
+    //        return;
+    //    }
+
+    //    Cup.gameObject.SetActive(false);
+    //}
+
+    public void SetCupsOwnership(bool IOwnThem)
     {
-        playersCupBundle.ResetAllCups();
-        enemysCupBundle.ResetAllCups();
+        playersCupBundle.SetCupsOwnership(IOwnThem);
+        enemysCupBundle.SetCupsOwnership(IOwnThem);
     }
 
-    public void StandActiveCupsBackToOringPos(bool notMyTurnAnymore)
+    public bool AmIOwnerOfCups()
     {
-        if (notMyTurnAnymore)
-            playersCupBundle.StandUpCupsAgain();
-        else
-            enemysCupBundle.StandUpCupsAgain();
+        return playersCupBundle.AmIOwnerOfCups() && enemysCupBundle.AmIOwnerOfCups();
+    }
+
+    public void ResetCups(bool activeOnly)
+    {
+        playersCupBundle.ResetCups(activeOnly);
+        enemysCupBundle.ResetCups(activeOnly);
+    }
+
+    public void SyncCups(bool sync)
+    {
+        playersCupBundle.SyncCups(sync);
+        enemysCupBundle.SyncCups(sync);
     }
 }

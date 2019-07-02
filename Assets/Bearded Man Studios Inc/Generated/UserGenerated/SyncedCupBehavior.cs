@@ -4,15 +4,13 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"bool\"][\"bool\"][]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"ItsMyTurn\"][\"IWon\"][]]")]
-	public abstract partial class GameManagerBehavior : NetworkBehavior
+	[GeneratedRPC("{\"types\":[[\"bool\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"Active\"]]")]
+	public abstract partial class SyncedCupBehavior : NetworkBehavior
 	{
-		public const byte RPC_PLAYER_TURN = 0 + 5;
-		public const byte RPC_GAME_OVER = 1 + 5;
-		public const byte RPC_CLIENT_NEXT_TRY = 2 + 5;
+		public const byte RPC_SET_CUP_ACTIVE = 0 + 5;
 		
-		public GameManagerNetworkObject networkObject = null;
+		public SyncedCupNetworkObject networkObject = null;
 
 		public override void Initialize(NetworkObject obj)
 		{
@@ -20,13 +18,11 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			if (networkObject != null && networkObject.AttachedBehavior != null)
 				return;
 			
-			networkObject = (GameManagerNetworkObject)obj;
+			networkObject = (SyncedCupNetworkObject)obj;
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
-			networkObject.RegisterRpc("PlayerTurn", PlayerTurn, typeof(bool));
-			networkObject.RegisterRpc("GameOver", GameOver, typeof(bool));
-			networkObject.RegisterRpc("ClientNextTry", ClientNextTry);
+			networkObject.RegisterRpc("SetCupActive", SetCupActive, typeof(bool));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -84,7 +80,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public override void Initialize(NetWorker networker, byte[] metadata = null)
 		{
-			Initialize(new GameManagerNetworkObject(networker, createCode: TempAttachCode, metadata: metadata));
+			Initialize(new SyncedCupNetworkObject(networker, createCode: TempAttachCode, metadata: metadata));
 		}
 
 		private void DestroyGameObject(NetWorker sender)
@@ -95,7 +91,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		public override NetworkObject CreateNetworkObject(NetWorker networker, int createCode, byte[] metadata = null)
 		{
-			return new GameManagerNetworkObject(networker, this, createCode, metadata);
+			return new SyncedCupNetworkObject(networker, this, createCode, metadata);
 		}
 
 		protected override void InitializedTransform()
@@ -105,18 +101,9 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		/// <summary>
 		/// Arguments:
-		/// bool ItsMyTurn
+		/// bool Active
 		/// </summary>
-		public abstract void PlayerTurn(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// bool IWon
-		/// </summary>
-		public abstract void GameOver(RpcArgs args);
-		/// <summary>
-		/// Arguments:
-		/// </summary>
-		public abstract void ClientNextTry(RpcArgs args);
+		public abstract void SetCupActive(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
