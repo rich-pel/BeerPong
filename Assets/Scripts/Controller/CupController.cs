@@ -4,6 +4,9 @@ using BeardedManStudios.Forge.Networking;
 using UnityEngine;
 
 
+// NOTE: Interpolating the cups seems like a BAD idea...
+
+
 [RequireComponent(typeof(Rigidbody))]
 public class CupController : SyncedCupBehavior
 {
@@ -11,7 +14,7 @@ public class CupController : SyncedCupBehavior
     private Vector3 homePosition;
     private Quaternion homeRotation;
     private Rigidbody body;
-    private bool bInit = false;
+    private bool sync = true;
 
     void Start()
     {
@@ -20,42 +23,58 @@ public class CupController : SyncedCupBehavior
         body = GetComponent<Rigidbody>(); // no check required because of RequireComponent
     }
 
-    private void Init()
+    private void FixedUpdate()
     {
-        if (!networkObject.IsServer)
+        if (!sync || networkObject == null) return;
+
+        if (networkObject.IsOwner)
+        {
+            body.useGravity = true;
+            body.isKinematic = false;
+            networkObject.position = transform.position;
+            networkObject.rotation = transform.rotation;
+            //Debug.Log("Sending Cups");
+        }
+        else
         {
             body.useGravity = false;
             body.isKinematic = true;
             body.velocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
+            //body.MovePosition(networkObject.position);
+            //body.MoveRotation(networkObject.rotation);
+            transform.position = networkObject.position;
+            transform.rotation = networkObject.rotation;
+            //Debug.Log("Receiving Cups");
         }
     }
 
-    void Update()
-    {
-        if (networkObject == null) return;
+    //private void SetInterpolation(bool enabled)
+    //{
+    //    if (enabled == networkObject.positionInterpolation.Enabled) return;
 
-        if (!bInit)
-        {
-            Init();
-            bInit = false;
-        }
+    //    networkObject.positionInterpolation.current = transform.position;
+    //    networkObject.positionInterpolation.target = transform.position;
+    //    networkObject.positionInterpolation.Timestep = 0;
+
+    //    networkObject.rotationInterpolation.current = transform.rotation;
+    //    networkObject.rotationInterpolation.target = transform.rotation;
+    //    networkObject.rotationInterpolation.Timestep = 0;
+
+    //    networkObject.positionInterpolation.Enabled = enabled;
+    //}
+
+    public void SetSync(bool sync)
+    {
+        //SetInterpolation(sync);
+        this.sync = sync;
     }
 
-    private void FixedUpdate()
+    public void SetOwnership(bool IOwnThis)
     {
-        if (networkObject == null) return;
+        if (!networkObject.IsServer) return;
 
-        if (networkObject.IsServer)
-        {
-            networkObject.position = body.position;
-            networkObject.rotation = body.rotation;
-        }
-        else
-        {
-            body.MovePosition(networkObject.position);
-            body.MoveRotation(networkObject.rotation);
-        }
+        networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[IOwnThis ? 0 : 1]);
     }
 
     public void SetActive(bool Active)
@@ -66,10 +85,14 @@ public class CupController : SyncedCupBehavior
 
     public void Reset()
     {
-        body.MovePosition(homePosition);
-        body.MoveRotation(homeRotation);
+        gameObject.SetActive(false);
+        //body.MovePosition(homePosition);
+        //body.MoveRotation(homeRotation);
+        transform.position = homePosition;
+        transform.rotation = homeRotation;
         body.angularVelocity = Vector3.zero;
         body.velocity = Vector3.zero;
+        gameObject.SetActive(true);
     }
 
     // RPC, do not call directly!

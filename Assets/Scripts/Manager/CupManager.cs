@@ -52,17 +52,26 @@ public class CupManager : MonoBehaviour
     //    Cup.gameObject.SetActive(false);
     //}
 
-    public void ResetAllCups()
+    public void SetCupsOwnership(bool IOwnThem)
     {
-        playersCupBundle.ResetAllCups(false);
-        enemysCupBundle.ResetAllCups(false);
+        playersCupBundle.SetCupsOwnership(IOwnThem);
+        enemysCupBundle.SetCupsOwnership(IOwnThem);
     }
 
-    public void StandActiveCupsBackToOringPos(bool myTurn)
+    public bool AmIOwnerOfCups()
     {
-        if (myTurn)
-            enemysCupBundle.ResetAllCups(true);
-        else
-            playersCupBundle.ResetAllCups(true);
+        return playersCupBundle.AmIOwnerOfCups() && enemysCupBundle.AmIOwnerOfCups();
+    }
+
+    public void ResetCups(bool activeOnly)
+    {
+        playersCupBundle.ResetCups(activeOnly);
+        enemysCupBundle.ResetCups(activeOnly);
+    }
+
+    public void SyncCups(bool sync)
+    {
+        playersCupBundle.SyncCups(sync);
+        enemysCupBundle.SyncCups(sync);
     }
 }

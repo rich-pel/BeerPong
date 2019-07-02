@@ -57,6 +57,11 @@ public class BallManager : MonoBehaviour
         }
     }
 
+    public void DetachFromHand()
+    {
+        throwableBall.DetachFromHand();
+    }
+
     public void SetBallState(BallController.EBallState NewState)
     {
         throwableBall.SetState(NewState);

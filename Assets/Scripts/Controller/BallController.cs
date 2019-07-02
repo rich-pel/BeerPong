@@ -15,6 +15,7 @@ public class BallController : SyncedBallBehavior
     }
 
     public EBallState State { get; private set; }
+    Interactable interact;
     Throwable throwable;
     Rigidbody body;
     TrailRenderer trail;
@@ -26,6 +27,9 @@ public class BallController : SyncedBallBehavior
         throwable = GetComponent<Throwable>();
         body = GetComponent<Rigidbody>();
         trail = GetComponent<TrailRenderer>();
+
+        // Throwable requires Interactable
+        interact = GetComponent<Interactable>();
 
         SetState(EBallState.Pause);
     }
@@ -56,6 +60,14 @@ public class BallController : SyncedBallBehavior
         return BallManager.instance.BallFallsOutOfTheRoom(gameObject.transform.position);
     }
 
+    public void DetachFromHand()
+    {
+        if (interact.attachedToHand != null)
+        {
+            interact.attachedToHand.DetachObject(gameObject);
+        }
+    }
+
     public void SetState(EBallState NewState)
     {
         if (State != NewState)
@@ -74,8 +86,8 @@ public class BallController : SyncedBallBehavior
     // Called by SteamVR (see inspector)
     public void OnPickUp()
     {
-        // Ignore grab if it's not our Turn
-        if (!GameManager.instance.MyTurn) return;
+        // Ignore grab if it's not our Turn or we already grabbed the ball once
+        if (!GameManager.instance.MyTurn || State == EBallState.Game) return;
 
         BallGrabbed();
 

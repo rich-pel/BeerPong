@@ -27,14 +27,45 @@ public class CupBundleController : MonoBehaviour
         return cupsActive;
     }
 
-    public void ResetAllCups(bool activeOnly)
+    public void SetCupsOwnership(bool IOwnThem)
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (cup.gameObject.activeInHierarchy)
+            {
+                cup.SetOwnership(IOwnThem);
+            }
+        }
+    }
+
+    public bool AmIOwnerOfCups()
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (cup.gameObject.activeInHierarchy && !cup.networkObject.IsOwner) return false;
+        }
+        return true;
+    }
+
+    public void ResetCups(bool activeOnly)
     {
         foreach (CupController cup in cupsInGroup)
         {
             if (activeOnly && !cup.gameObject.activeInHierarchy) continue;
 
-            cup.SetActive(true);
+            //cup.SetActive(true);
             cup.Reset();
+        }
+    }
+
+    public void SyncCups(bool sync)
+    {
+        foreach (CupController cup in cupsInGroup)
+        {
+            if (cup.gameObject.activeInHierarchy)
+            {
+                cup.SetSync(sync);
+            }
         }
     }
 }

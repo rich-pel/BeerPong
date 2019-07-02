@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"bool\"][\"bool\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"ItsMyTurn\"][\"IWon\"]]")]
+	[GeneratedRPC("{\"types\":[[\"bool\"][\"bool\"][]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"ItsMyTurn\"][\"IWon\"][]]")]
 	public abstract partial class GameManagerBehavior : NetworkBehavior
 	{
 		public const byte RPC_PLAYER_TURN = 0 + 5;
 		public const byte RPC_GAME_OVER = 1 + 5;
+		public const byte RPC_CLIENT_NEXT_TRY = 2 + 5;
 		
 		public GameManagerNetworkObject networkObject = null;
 
@@ -25,6 +26,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("PlayerTurn", PlayerTurn, typeof(bool));
 			networkObject.RegisterRpc("GameOver", GameOver, typeof(bool));
+			networkObject.RegisterRpc("ClientNextTry", ClientNextTry);
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -111,6 +113,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// bool IWon
 		/// </summary>
 		public abstract void GameOver(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void ClientNextTry(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
