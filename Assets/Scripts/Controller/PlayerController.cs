@@ -1,4 +1,6 @@
-﻿using Valve.VR;
+﻿using BeardedManStudios.Forge.Networking.Generated;
+using BeardedManStudios.Forge.Networking.Unity;
+using Valve.VR;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -16,12 +18,29 @@ public class PlayerController : MonoBehaviour
     public Transform VRRoot;
     public Transform VRHead;
     public Transform Destination;
-
-    Vector3 velocity;
+    public SyncedPlayerState RedPlayer;
+    public SyncedPlayerState BluePlayer;
 
     public SteamVR_Action_Boolean Input;
     public SteamVR_Input_Sources InputSource = SteamVR_Input_Sources.Any;
-    
+
+
+    public bool ShowOpponent
+    {
+        get
+        {
+            return GameManager.instance.IsServer && !GameManager.instance.IsClient && BluePlayer.ShowOpponent ||
+                   GameManager.instance.IsClient && !GameManager.instance.IsServer && RedPlayer.ShowOpponent;
+        }
+        set
+        {
+            if (GameManager.instance.IsServer)
+                BluePlayer.ShowOpponent = value;
+            else if (GameManager.instance.IsClient)
+                RedPlayer.ShowOpponent = value;
+        }
+    }
+
     // Use this for initialization
     void OnEnable()
     {
@@ -31,7 +50,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
         if (Input != null)
         {
@@ -39,7 +58,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerPressedOrReleased(SteamVR_Action_Boolean actionIn, SteamVR_Input_Sources inputSource, bool newValue)
+    void OnTriggerPressedOrReleased(SteamVR_Action_Boolean actionIn, SteamVR_Input_Sources inputSource, bool newValue)
     {
         if (newValue)
         {
@@ -47,31 +66,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    //void Update()
-    //{
-    //    SteamVR_Input.GetStateDown
-    //    foreach (var action in SteamVR_Input.actionsIn)
-    //    {
-    //        Debug.Log("ACTION: " + action);
-    //    }
-    //}
-
-    // Update is called once per frame
-    //void FixedUpdate()
-    //{
-    //    Vector3 dist = Destination.position - VRHead.position;
-    //    VRRoot.position = Vector3.SmoothDamp(VRRoot.position, dist, ref velocity, SmoothTime);
-    //}
-
     public void ResetPosition()
     {
         VRRoot.position = Destination.position - (VRHead.position - VRRoot.position);
-        //VRRoot.rotation = Destination.rotation * Quaternion.Inverse(VRHead.rotation * Quaternion.Inverse(VRRoot.rotation));
+    }
+
+    public void ApplyBlueOwnership()
+    {
+        BluePlayer.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[1]);
     }
 }

@@ -8,7 +8,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 	[GeneratedInterpol("{\"inter\":[0,0,0,0,0,0]")]
 	public partial class SyncedCupNetworkObject : NetworkObject
 	{
-		public const int IDENTITY = 9;
+		public const int IDENTITY = 7;
 
 		private byte[] _dirtyFields = new byte[1];
 

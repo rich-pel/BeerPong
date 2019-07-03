@@ -79,6 +79,7 @@ public class GameManager : GameManagerBehavior
             // teleport us to proper position
             PlayerController.Instance.Destination = PlayerBlueStart;
             PlayerController.Instance.ResetPosition();
+            PlayerController.Instance.ShowOpponent = true;
         }
     }
 
@@ -89,6 +90,7 @@ public class GameManager : GameManagerBehavior
 
         Reset(false);
         GameState = EGameState.WaitingForConnection;
+        PlayerController.Instance.ShowOpponent = false;
     }
 
     // Server Event
@@ -102,6 +104,8 @@ public class GameManager : GameManagerBehavior
     {
         Debug.Log("Player " + player.Ip + " accepted!");
         Reset(true);
+        PlayerController.Instance.ApplyBlueOwnership();
+        PlayerController.Instance.ShowOpponent = true;
     }
 
     // Client Event
