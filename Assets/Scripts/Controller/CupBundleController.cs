@@ -53,7 +53,7 @@ public class CupBundleController : MonoBehaviour
         {
             if (activeOnly && !cup.gameObject.activeInHierarchy) continue;
 
-            //cup.SetActive(true);
+            cup.SetActive(true); // do not forget to activate on client aswell
             cup.Reset();
         }
     }

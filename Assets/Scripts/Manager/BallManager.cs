@@ -96,7 +96,7 @@ public class BallManager : MonoBehaviour
 
     public void SetBallOwnership(bool myBall)
     {
-        if (GameManager.instance.IsServer && GameManager.instance.EnemyIsConnected())
+        if (GameManager.instance.IsServer && GameManager.instance.GameState == GameManager.EGameState.Running)
         {
             throwableBall.SetOwnership(myBall);
         }
