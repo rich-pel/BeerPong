@@ -273,13 +273,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd46d1078aa21de4c8f14873be388b65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  editorCupHeight: 0.11
-  editorRadius: 0.7
-  editorMaxFormHeight: 1
-  editorBaseHeightSpillage: 0
+  childFoam: {fileID: 6995217572592571548}
+  formRenderer: {fileID: 4468852493793569939}
+  childSpillage: {fileID: 8438886448378851188}
   numberOutlets: 20
-  ChildForm: {fileID: 6995217572592571548}
-  ChildSpillage: {fileID: 8438886448378851188}
 --- !u!1 &4378955323584855832
 GameObject:
   m_ObjectHideFlags: 0

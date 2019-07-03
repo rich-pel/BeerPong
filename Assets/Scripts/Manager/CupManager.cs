@@ -21,8 +21,8 @@ public class CupManager : MonoBehaviour
     [SerializeField] private CupBundleController enemysCupBundle;
 
 
-    public const float CupHeight = 0.12f;
-    public const float CupRadius = 0.07f;
+    public const float CupHeight = 0.11f;
+    public const float CupRadius = 0.035f;
 
 
     public void InitCups()

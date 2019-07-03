@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,5 +36,10 @@ public class BlendTex : MonoBehaviour
         {
             this.enabled = false;
         }
+    }
+
+    internal void Restart()
+    {
+        throw new NotImplementedException();
     }
 }

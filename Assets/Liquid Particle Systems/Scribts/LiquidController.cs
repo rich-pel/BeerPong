@@ -10,7 +10,9 @@ using UnityEngine;
 /// </summary>
 public class LiquidController : MonoBehaviour
 {
-    [SerializeField] private GameObject childForm;
+    [SerializeField] private GameObject childFoam;
+    [SerializeField] private BlendTex formRenderer;
+
     [SerializeField] private GameObject childSpillage;
 
     [SerializeField] private int numberOutlets;
@@ -19,19 +21,29 @@ public class LiquidController : MonoBehaviour
     // CupSpecific
     private float _cupHeight;
     private float _radius;
-
     private Vector3 _target;
+    private float _angleX;
+    private float _angleY;
 
 
+    private float _fillLevel = 100f;
 
     // Start is called before the first frame update
     private void Start()
     {
-        _cupHeight = CupManager.CupHeight / 2;
-        _radius = CupManager.CupRadius;
+        _cupHeight = 0.11f; //CupManager.CupHeight;
+        _radius = 0.04f;
 
         GenerateOutlets(numberOutlets);
     }
+
+    private void OnEnable()
+    {
+        _fillLevel = 100f;
+        childFoam.SetActive(true);
+        formRenderer.Restart();
+    }
+
 
     private void GenerateOutlets(int numOutlets)
     {
@@ -53,61 +65,45 @@ public class LiquidController : MonoBehaviour
     void Update()
     {
 
+        // Get state of cup
         int count = 0;
         _target = Vector3.zero;
-
         foreach (GameObject outlet in Outlets)
         {
-            if (outlet.transform.position.y > transform.position.y)
+            // foam bleibt immer in der mitte des cups
+            if (outlet.transform.position.y > childFoam.transform.position.y )
             {
-                _target += outlet.transform.position;
+                _target += outlet.transform.localPosition;
                 count++;
             }
         }
 
+        // hanlde Foam
+        childFoam.transform.LookAt(Vector3.up); // Orientation
+        _angleX = Vector3.Angle(Vector3.right, transform.forward); // scale
+        _angleY = Vector3.Angle(Vector3.up, transform.forward); // scale
 
-        // Manage Spillage
-        
-        if (count < 1)
+        Debug.Log("X: " + _angleX);
+        Debug.Log("Y: " + _angleY);
+
+        // etwas von hinten durch die Brust und durchs ins Auge machen
+        Vector3 _scale = childFoam.transform.localScale;
+        _scale.x = Mathf.Acos(_angleX); // /0.4f;
+        _scale.y = Mathf.Acos(_angleY); // /0.4f;
+        childFoam.transform.localScale = _scale;
+
+
+        // handle Spillage 
+        if(count < 1 && _fillLevel > 0)
         {
-            // child Spillage
-            childSpillage.SetActive(false);
+            childSpillage.SetActive(true);
+            childSpillage.transform.forward = _target.normalized;
+            _fillLevel -= count;
         }
         else
         {
             // Spillage
-            childSpillage.SetActive(true);
-            _target *= count;
-            childSpillage.transform.LookAt(_target);
-
-            if (heightFoam <= 0)
-            {
-
-            }
+            childSpillage.SetActive(false);
         }
-
-        // pose of liquid parts
-        childForm.transform.LookAt(childForm.transform.position + Vector3.up);
-    }
-
-    // TODO: Remove to CupManager / Some Namespace
-    /// <summary>
-    /// Returns the scaling through all parents
-    /// </summary>
-    /// <param name="requestedTransform"></param>
-    /// <returns></returns>
-    private Vector3 globalScale(Transform requestedTransform)
-    {
-        Vector3 _scale = requestedTransform.localScale;
-
-        while (requestedTransform.transform.parent != null)
-        {
-            //_scale *= requestedTransform.localScale;
-            _scale = Vector3.Scale(_scale, requestedTransform.localScale);
-            // next recursive level
-            requestedTransform = requestedTransform.transform.parent;
-        }
-
-        return _scale;
     }
 }
