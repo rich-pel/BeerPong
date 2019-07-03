@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 [ExecuteInEditMode]
 
-public class tintComputeScript : MonoBehaviour {
+public class TintComputeScript : MonoBehaviour {
 
    public ComputeShader shader;
    public Color color = new Color(1.0f, .0f, .0f, 1.0f);
