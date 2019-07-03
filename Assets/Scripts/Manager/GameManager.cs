@@ -66,6 +66,7 @@ public class GameManager : GameManagerBehavior
         {
             Reset(false);
             GameState = EGameState.WaitingForConnection;
+            CupManager.instance.InitCups();
 
             NetworkManager.Instance.Networker.playerDisconnected += ThreadPipe.Pipe(OnPlayerDisconnected);
             NetworkManager.Instance.Networker.playerRejected += ThreadPipe.Pipe(OnPlayerRejected);

@@ -19,8 +19,7 @@ public class CupBundleController : MonoBehaviour
     private float _distanceY;
 
 
-
-    void Start()
+    public void Init()
     {
         // get radius from somewhere
         _distanceY = radius + _gab;
@@ -40,7 +39,6 @@ public class CupBundleController : MonoBehaviour
     /// </summary>
     void CreateCups()
     {
-
         int _count = 0;
 
         for (int y = 0; y < _numRows; y++)
