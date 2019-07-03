@@ -64,9 +64,9 @@ public class GameManager : GameManagerBehavior
     {
         if (IsServer)
         {
+            CupManager.instance.InitCups(); // this must happen before Reset!
             Reset(false);
             GameState = EGameState.WaitingForConnection;
-            CupManager.instance.InitCups();
 
             NetworkManager.Instance.Networker.playerDisconnected += ThreadPipe.Pipe(OnPlayerDisconnected);
             NetworkManager.Instance.Networker.playerRejected += ThreadPipe.Pipe(OnPlayerRejected);
@@ -155,6 +155,11 @@ public class GameManager : GameManagerBehavior
         // ========== Client code ==========
         if (!networkObject.IsServer)
         {
+            if (!CupManager.instance.AllCupsFound)
+            {
+                CupManager.instance.InitClientCups();
+            }
+
             if (waitForHandshake)
             {
                 bool amIOwnerOfBall = BallManager.instance.AmIOwnerOfBall();

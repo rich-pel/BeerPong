@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using BeardedManStudios.Forge.Networking;
-using BeardedManStudios.Forge.Networking.Unity;
+﻿using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking.Generated;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CupBundleController : MonoBehaviour
 {
-    private List<CupController> cupsInGroup = new List<CupController>();
+    private CupController[] cupsInGroup = new CupController[10];
 
     [SerializeField] private int NetworkPrefabIndex;
     [SerializeField] private float radius = 0.7f;
@@ -19,7 +17,30 @@ public class CupBundleController : MonoBehaviour
     private float _distanceY;
 
 
-    public void Init()
+    public bool InitClient(bool bRedCups)
+    {
+        byte sanityCount = 0;
+        GameObject[] objs = SceneManager.GetActiveScene().GetRootGameObjects();
+        foreach (GameObject obj in objs)
+        {
+            CupController cup = obj.GetComponent<CupController>();
+            if (cup != null && cup.networkObject.cupIsRed == bRedCups)
+            {
+                cupsInGroup[cup.networkObject.cupIndex] = cup;
+                sanityCount++;
+            }
+        }
+
+        if (sanityCount != 10)
+        {
+            Debug.LogError("We're missing cups! Found " + sanityCount + "/10");
+            return false;
+        }
+
+        return true;
+    }
+
+    public void Init(bool bRedCups)
     {
         // get radius from somewhere
         _distanceY = radius + _gab;
@@ -31,15 +52,15 @@ public class CupBundleController : MonoBehaviour
             return;
         }
 
-        CreateCups();
+        CreateCups(bRedCups);
     }
 
     /// <summary>
     /// Instantiates Cups in diamond formation
     /// </summary>
-    void CreateCups()
+    void CreateCups(bool bRedCups)
     {
-        int _count = 0;
+        byte _count = 0;
 
         for (int y = 0; y < _numRows; y++)
         {
@@ -65,16 +86,16 @@ public class CupBundleController : MonoBehaviour
                     return;
                 }
 
+                cup.networkObject.cupIndex = _count;
+                cup.networkObject.cupIsRed = bRedCups;
+                cup.networkObject.homePosition = pos;
+                cup.networkObject.homeRotation = rot;
+                cup.Init(); // needs to be initialized this frame!
+
                 GameObject myGO = syncedCup.gameObject;
-
-                
                 myGO.name = "Cup" + _count;
-                myGO.transform.localPosition = pos;
                 cup.father = this;
-                cupsInGroup.Add(cup);
-
-                _count++;
-     
+                cupsInGroup[_count++] = cup;
                 
                 // TODO: Lass das den copController machen: myGO.GetComponent<CupController>().father = this.transform; 
             }

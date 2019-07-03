@@ -11,16 +11,24 @@ using UnityEngine;
 public class CupController : SyncedCupBehavior
 {
     public CupBundleController father;
-    private Vector3 homePosition;
-    private Quaternion homeRotation;
     private Rigidbody body;
     private bool sync = true;
+    private bool bInit = false;
+
 
     void Start()
     {
-        homePosition = transform.position;
-        homeRotation = transform.rotation;
-        body = GetComponent<Rigidbody>(); // no check required because of RequireComponent
+        Init();
+    }
+
+    public void Init()
+    {
+        if (bInit) return;
+
+        // no check required because of RequireComponent
+        body = GetComponent<Rigidbody>();
+
+        bInit = true;
     }
 
     private void FixedUpdate()
@@ -88,8 +96,8 @@ public class CupController : SyncedCupBehavior
         gameObject.SetActive(false);
         //body.MovePosition(homePosition);
         //body.MoveRotation(homeRotation);
-        transform.position = homePosition;
-        transform.rotation = homeRotation;
+        transform.position = networkObject.homePosition;
+        transform.rotation = networkObject.homeRotation;
         body.angularVelocity = Vector3.zero;
         body.velocity = Vector3.zero;
         gameObject.SetActive(true);

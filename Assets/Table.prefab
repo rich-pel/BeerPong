@@ -2239,7 +2239,7 @@ GameObject:
   - component: {fileID: 7571689317893219519}
   m_Layer: 0
   m_Name: MainPlane
-  m_TagString: Untagged
+  m_TagString: Table
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
