@@ -21,6 +21,12 @@ public class CupManager : MonoBehaviour
     [SerializeField] private CupBundleController enemysCupBundle;
 
 
+    public void InitCups()
+    {
+        playersCupBundle.Init();
+        enemysCupBundle.Init();
+    }
+
     public bool IsMyCup(CupController Cup)
     {
         if (Cup.father == null)

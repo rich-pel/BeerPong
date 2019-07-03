@@ -1,7 +1,11 @@
-﻿using BeardedManStudios.Forge.Networking;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking.Generated;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 
 
@@ -28,52 +32,108 @@ public class GameManager : GameManagerBehavior
     public bool IsServer { get { return networkObject != null ? networkObject.IsServer : false; } }
     public bool IsClient { get { return networkObject != null ? !networkObject.IsServer : false; } }
 
-    public const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
-    private const int MaxTries = 3;
-    private const float StartCountdown = 3.0f;
+    const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
+    const int MaxTries = 3;
+    const float StartCountdown = 3.0f; // in seconds
 
-    [SerializeField] private GameObject RoomGround;
+    [SerializeField] GameObject RoomGround;
+    [SerializeField] Transform PlayerRedStart;
+    [SerializeField] Transform PlayerBlueStart;
     
-    public EGameState gameState { get; private set; }
+    public EGameState GameState
+    {
+        get { return (EGameState)networkObject.gameState; }
+        private set { networkObject.gameState = (byte)value; }
+    }
     
     public bool MyTurn { get; private set; }
 
-    private bool bInit = false;
-    private int currentTry = 0;
-    
-    private float countdownTimer = 0f;
-    private bool waitForHandshake = false;
+    bool bInit = false;
+    int currentTry = 0;
+    bool waitForHandshake = false;
 
+    void Start()
+    {
+        if (!RoomGround) Debug.LogError("RoomGround is NULL!");
+        if (!PlayerRedStart) Debug.LogError("PlayerRedStart is NULL!");
+        if (!PlayerBlueStart) Debug.LogError("PlayerBlueStart is NULL!");
+    }
 
     // Start is called before the first frame update
     void Init()
     {
         if (IsServer)
         {
-            Reset();
-            gameState = EGameState.WaitingForConnection;
+            Reset(false);
+            GameState = EGameState.WaitingForConnection;
+            CupManager.instance.InitCups();
 
-            NetworkManager.Instance.Networker.playerDisconnected += (NetworkingPlayer player, NetWorker sender) =>
-            {
-                Debug.Log("Player " + player.Ip + " disconnected!");
-            };
-
-            NetworkManager.Instance.Networker.playerRejected += (NetworkingPlayer player, NetWorker sender) =>
-            {
-                Debug.Log("Player " + player.Ip + " rejected!");
-            };
-
-            NetworkManager.Instance.Networker.playerAccepted += (NetworkingPlayer player, NetWorker sender) => 
-            {
-                Debug.Log("Player " + player.Ip + " accepted! Sending current turn...");
-                networkObject.SendRpc(player, RPC_PLAYER_TURN, MyTurn);
-            };
+            NetworkManager.Instance.Networker.playerDisconnected += ThreadPipe.Pipe(OnPlayerDisconnected);
+            NetworkManager.Instance.Networker.playerRejected += ThreadPipe.Pipe(OnPlayerRejected);
+            NetworkManager.Instance.Networker.playerAccepted += ThreadPipe.Pipe(OnPlayerAccepted);
         }
+        else if (IsClient)
+        {
+            NetworkManager.Instance.Networker.disconnected += ThreadPipe.Pipe(OnDisconnected);
+
+            // teleport us to proper position
+            PlayerController.Instance.Destination = PlayerBlueStart;
+            PlayerController.Instance.ResetPosition();
+        }
+    }
+
+    // Server Event
+    void OnPlayerDisconnected(NetworkingPlayer player, NetWorker sender)
+    {
+        Debug.Log("Player " + player.Ip + " disconnected!");
+
+        Reset(false);
+        GameState = EGameState.WaitingForConnection;
+    }
+
+    // Server Event
+    void OnPlayerRejected(NetworkingPlayer player, NetWorker sender)
+    {
+        Debug.Log("Player " + player.Ip + " rejected!");
+    }
+
+    // Server Event
+    void OnPlayerAccepted(NetworkingPlayer player, NetWorker sender)
+    {
+        Debug.Log("Player " + player.Ip + " accepted!");
+        Reset(true);
+    }
+
+    // Client Event
+    void OnDisconnected(NetWorker sender)
+    {
+        Debug.Log("Disconnected Event!");
+        BackToMainMenu();
+    }
+
+    void BackToMainMenu()
+    {
+        if (NetworkManager.Instance != null)
+        {
+            NetworkManager.Instance.Disconnect();
+            Destroy(NetworkManager.Instance.gameObject);
+        }
+
+        if (BMSLogger.Instance != null) Destroy(BMSLogger.Instance.gameObject);
+        if (MainThreadManager.Instance != null) Destroy(MainThreadManager.Instance.gameObject);
+
+        SceneManager.LoadScene("MainMenu");
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Escape back to Main Menu
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            BackToMainMenu();
+        }
+
         // If unity's Update() runs, before the object is
         // instantiated in the network, then simply don't
         // continue, otherwise a bug/error will happen.
@@ -81,6 +141,16 @@ public class GameManager : GameManagerBehavior
         // Unity's Update() running, before this object is instantiated
         // on the network is **very** rare, but better be safe 100%
         if (networkObject == null) return;
+
+        // async init (Start) required because of networking
+        if (!bInit)
+        {
+            Init();
+            bInit = true;
+        }
+
+        // Execute piped events!
+        ThreadPipe.ExecuteQueue();
 
         // ========== Client code ==========
         if (!networkObject.IsServer)
@@ -111,33 +181,7 @@ public class GameManager : GameManagerBehavior
 
         // ========== Server code ==========
 
-        // async init (Start) required because of networking
-        if (!bInit)
-        {
-            Init();
-            bInit = true;
-        }
-
-        if (gameState == EGameState.WaitingForConnection && EnemyIsConnected())
-        {
-            Debug.Log("Enemy connected!");
-            Reset();
-        }
-        else if (gameState == EGameState.Pause)
-        {
-            if (countdownTimer > 0f)
-            {
-                countdownTimer -= Time.deltaTime;
-            }
-            else
-            {
-                Debug.Log("Start Game!");
-                Reset();
-                gameState = EGameState.Running;
-                SetTurn(MyTurn);
-            }
-        }
-        else if (gameState == EGameState.Running)
+        if (GameState == EGameState.Running)
         {
             // The Server can instantly change the turn for Debug reasons
             if (Input.GetKeyDown(KeyCode.Space))
@@ -149,23 +193,14 @@ public class GameManager : GameManagerBehavior
             networkObject.playedTime += Time.deltaTime;
             CheckGameOver();
         }
-
-        // check if enemy is still connected...
-        if (gameState != EGameState.WaitingForConnection && !EnemyIsConnected())
-        {
-            Debug.LogWarning("We lost the connection to our Enemy! Reset Game!");
-            Reset();
-            gameState = EGameState.WaitingForConnection;
-        }
     }
 
-    void Reset()
+    void Reset(bool bStartGame)
     {
         if (!IsServer) return;
         
         MyTurn = true;
-        gameState = EGameState.Pause;
-        countdownTimer = StartCountdown;
+        GameState = EGameState.Pause;
         currentTry = 0;
         networkObject.hostPoints = 0;
         networkObject.clientPoints = 0;
@@ -175,8 +210,30 @@ public class GameManager : GameManagerBehavior
         CupManager.instance.ResetCups(false);
         BallManager.instance.SetBallOwnership(MyTurn);
         BallManager.instance.SetPositionToBallHolder(MyTurn);
-        
+
         Debug.Log("Game Resetted!");
+
+        if (bStartGame)
+        {
+            StartCoroutine(Countdown());
+        }
+    }
+
+    IEnumerator Countdown()
+    {
+        yield return new WaitForSeconds(StartCountdown);
+        GameStart();
+    }
+
+    void GameStart()
+    {
+        Debug.Log("Start Game!");
+
+        PlayerController.Instance.Destination = PlayerRedStart;
+        PlayerController.Instance.ResetPosition();
+
+        GameState = EGameState.Running;
+        SetTurn(MyTurn);
     }
 
     // Returns true if Game is really over (or bad game state)
@@ -184,7 +241,7 @@ public class GameManager : GameManagerBehavior
     {
         if (!IsServer) return true;
         
-        if (gameState != EGameState.Running)
+        if (GameState != EGameState.Running)
         {
             Debug.LogError("Called 'CheckGameOver' although NO Game is currently running!");
             return true;
@@ -193,27 +250,23 @@ public class GameManager : GameManagerBehavior
         if (networkObject.hostPoints >= MaxPoints)
         {
             Debug.Log("WE WON !!!!!!!!!!!");
-            Reset();
+            Reset(true);
             return true;
         }
         else if (networkObject.clientPoints >= MaxPoints)
         {
             Debug.Log("The Enemy won...................");
-            Reset();
+            Reset(true);
             return true;
         }
 
         return false;
     }
 
-    public bool EnemyIsConnected()
-    {
-        return NetworkManager.Instance.Networker.Players.Count >= 2;
-    }
 
     public void BallFellInCup(CupController cup)
     {
-        if (!IsServer || gameState != EGameState.Running || waitForHandshake) return;
+        if (!IsServer || GameState != EGameState.Running || waitForHandshake) return;
 
         Debug.Log("In Ball Fell In Cup");
 
@@ -241,7 +294,7 @@ public class GameManager : GameManagerBehavior
             return;
         }
 
-        if (!IsServer || gameState != EGameState.Running) return;
+        if (!IsServer || GameState != EGameState.Running) return;
 
         if (MyTurn)
         {
@@ -251,12 +304,13 @@ public class GameManager : GameManagerBehavior
         {
             Debug.Log("The ENEMY can't aim!");
         }
+
         NextTry();
     }
 
-    private void NextTry()
+    void NextTry()
     {
-        if (!IsServer || gameState != EGameState.Running) return;
+        if (!IsServer || GameState != EGameState.Running) return;
         
         currentTry++;
         if (currentTry >= MaxTries)
@@ -295,7 +349,7 @@ public class GameManager : GameManagerBehavior
         BallManager.instance.SetPositionToBallHolder(MyTurn);
     }
 
-    private void SetTurn(bool IamNext)
+    void SetTurn(bool IamNext)
     {
         if (!IsServer) return;
         
@@ -313,7 +367,7 @@ public class GameManager : GameManagerBehavior
         networkObject.SendRpc(RPC_PLAYER_TURN, Receivers.Others, !MyTurn);
     }
 
-    private void ApplyTurn()
+    void ApplyTurn()
     {
         CupManager.instance.ResetCups(true);
         BallManager.instance.SetPositionToBallHolder(MyTurn);

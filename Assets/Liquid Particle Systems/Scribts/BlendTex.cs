@@ -25,7 +25,7 @@ public class BlendTex : MonoBehaviour
     {
         _blendAmount = Time.time * _speed;
 
-        Debug.Log(_blendAmount);
+        //Debug.Log(_blendAmount);
 
         if (_blendAmount < 1)
         {
