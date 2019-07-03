@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 3084539580495306548}
   - component: {fileID: 4277138008093088898}
   - component: {fileID: 5332021470974079085}
+  - component: {fileID: 8083599005210236381}
   m_Layer: 0
   m_Name: RedCup
   m_TagString: Cup
@@ -260,6 +261,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   father: {fileID: 0}
+--- !u!114 &8083599005210236381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3934449158047381638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd46d1078aa21de4c8f14873be388b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  editorCupHeight: 0.11
+  editorRadius: 0.7
+  editorMaxFormHeight: 1
+  editorBaseHeightSpillage: 0
+  numberOutlets: 20
+  ChildForm: {fileID: 6995217572592571548}
+  ChildSpillage: {fileID: 8438886448378851188}
 --- !u!1 &4378955323584855832
 GameObject:
   m_ObjectHideFlags: 0
