@@ -16,7 +16,7 @@ public class CounterText : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         redPointsText.text = " "+ GameManager.instance.GetRedPoints();
 		bluePointsText.text = " "+ GameManager.instance.GetBluePoints();
