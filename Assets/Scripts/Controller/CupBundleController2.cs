@@ -45,8 +45,6 @@ public class CupBundleController2 : MonoBehaviour
 
         int _count=0;
 
-
-
         for (int y = 0; y < _numRows; y++)
         {
             for (int x = -y; x <= y; x+=2)
