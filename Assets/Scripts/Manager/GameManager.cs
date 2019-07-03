@@ -32,7 +32,7 @@ public class GameManager : GameManagerBehavior
     public bool IsServer { get { return networkObject != null ? networkObject.IsServer : false; } }
     public bool IsClient { get { return networkObject != null ? !networkObject.IsServer : false; } }
 
-    const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
+    public const int MaxPoints = 10; // we keep this (although calculateable through cups) to be more efficient BlurController
     const int MaxTries = 3;
     const float StartCountdown = 3.0f; // in seconds
 

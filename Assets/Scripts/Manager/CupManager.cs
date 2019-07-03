@@ -23,7 +23,7 @@ public class CupManager : MonoBehaviour
 
     public const float CupHeight = 0.11f;
     public const float CupRadius = 0.035f;
-
+    
 
     public void InitCups()
     {

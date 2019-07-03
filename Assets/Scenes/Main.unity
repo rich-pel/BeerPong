@@ -831,6 +831,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &1113303793 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9083671165129997970, guid: 2f3a292039ade514e9ba1f80ee76447d,
+    type: 3}
+  m_PrefabInstance: {fileID: 9083671166587778147}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1113303794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113303793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a447ad70ed67c24093a8e785f1aadd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  postprocessMaterials:
+  - {fileID: 2100000, guid: 29c5f5612b5f7b848b20c977c4b1a5b1, type: 2}
+  - {fileID: 2100000, guid: 5cc0268dee57204419138f57ea8493d4, type: 2}
+  _speed: 0.5
+  playerOrEnemy: 0
 --- !u!1 &1134006662
 GameObject:
   m_ObjectHideFlags: 0
@@ -908,6 +931,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &1198882811 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9083671165130007266, guid: 2f3a292039ade514e9ba1f80ee76447d,
+    type: 3}
+  m_PrefabInstance: {fileID: 9083671166587778147}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1198882813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1198882811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a447ad70ed67c24093a8e785f1aadd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  postprocessMaterials:
+  - {fileID: 2100000, guid: 29c5f5612b5f7b848b20c977c4b1a5b1, type: 2}
+  - {fileID: 2100000, guid: 5cc0268dee57204419138f57ea8493d4, type: 2}
+  _speed: 0.5
+  playerOrEnemy: 0
 --- !u!1 &1235825971
 GameObject:
   m_ObjectHideFlags: 0
@@ -1851,6 +1897,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 9083671165130012468, guid: 2f3a292039ade514e9ba1f80ee76447d,
+        type: 3}
+      propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 5012834499762511322, guid: 2f3a292039ade514e9ba1f80ee76447d,
         type: 3}
       propertyPath: Destination
@@ -1861,20 +1912,15 @@ PrefabInstance:
       propertyPath: grabPinch.actionPath
       value: /actions/default/in/GrabGrip
       objectReference: {fileID: 0}
-    - target: {fileID: 9083671165130012468, guid: 2f3a292039ade514e9ba1f80ee76447d,
-        type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 9083671165130442572, guid: 2f3a292039ade514e9ba1f80ee76447d,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.611
       objectReference: {fileID: 0}
     - target: {fileID: 9083671165130442572, guid: 2f3a292039ade514e9ba1f80ee76447d,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.684
+      value: 1.258
       objectReference: {fileID: 0}
     - target: {fileID: 9083671165130442572, guid: 2f3a292039ade514e9ba1f80ee76447d,
         type: 3}
