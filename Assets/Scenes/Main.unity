@@ -253,6 +253,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
+        type: 3}
+      propertyPath: m_Name
+      value: Table
+      objectReference: {fileID: 0}
+    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 17345997978504030, guid: 5340677f222a9894cb469a2e304ef4ce,
         type: 3}
       propertyPath: m_RootOrder
@@ -272,21 +287,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
-        type: 3}
-      propertyPath: m_Name
-      value: Table
-      objectReference: {fileID: 0}
-    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
-        type: 3}
-      propertyPath: m_TagString
-      value: Untagged
-      objectReference: {fileID: 0}
-    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 17345996726704247, guid: 5340677f222a9894cb469a2e304ef4ce,
         type: 3}
@@ -612,7 +612,7 @@ Transform:
   m_GameObject: {fileID: 417465108}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -2.99, y: 1.5, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 11
@@ -624,6 +624,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
+        type: 3}
+      propertyPath: m_Name
+      value: PlayersBallHolder
+      objectReference: {fileID: 0}
+    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 8334145972841782924, guid: 706143942b223904f8491698b3764cd8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -663,16 +673,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
-        type: 3}
-      propertyPath: m_Name
-      value: PlayersBallHolder
-      objectReference: {fileID: 0}
-    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 3768409162330719650, guid: 706143942b223904f8491698b3764cd8,
         type: 3}
@@ -1050,7 +1050,7 @@ Transform:
   m_GameObject: {fileID: 927111708}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 2.99, y: 1.5, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 10
@@ -1338,6 +1338,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2934705422851593145, guid: 3064428cf34e3c0479f423d7d3eb57a0,
+        type: 3}
+      propertyPath: m_Name
+      value: PongBall
+      objectReference: {fileID: 0}
     - target: {fileID: 2934705422851593141, guid: 3064428cf34e3c0479f423d7d3eb57a0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1373,11 +1378,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2934705422851593145, guid: 3064428cf34e3c0479f423d7d3eb57a0,
-        type: 3}
-      propertyPath: m_Name
-      value: PongBall
-      objectReference: {fileID: 0}
     - target: {fileID: 2934705422851593142, guid: 3064428cf34e3c0479f423d7d3eb57a0,
         type: 3}
       propertyPath: onDetachFromHand.m_PersistentCalls.m_Calls.Array.size
@@ -1407,6 +1407,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
+        type: 3}
+      propertyPath: m_Name
+      value: EnemyBallHolder
+      objectReference: {fileID: 0}
+    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 8334145972841782924, guid: 706143942b223904f8491698b3764cd8,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1461,16 +1471,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
-        type: 3}
-      propertyPath: m_Name
-      value: EnemyBallHolder
-      objectReference: {fileID: 0}
-    - target: {fileID: 8334145972841782927, guid: 706143942b223904f8491698b3764cd8,
-        type: 3}
-      propertyPath: m_StaticEditorFlags
-      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 3768409162330719650, guid: 706143942b223904f8491698b3764cd8,
         type: 3}
