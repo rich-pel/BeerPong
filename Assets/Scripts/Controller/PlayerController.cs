@@ -29,7 +29,6 @@ public class PlayerController : MonoBehaviour
     public SteamVR_Input_Sources InputSource = SteamVR_Input_Sources.Any;
 
 
-
     public bool ShowOpponent
     {
         get
@@ -101,7 +100,7 @@ public class PlayerController : MonoBehaviour
 
     void EnableHandCollisions(bool enable)
     {
-        RightHandCollider.enabled = enabled;
-        LeftHandCollider.enabled = enabled;
+        RightHandCollider.enabled = enable;
+        LeftHandCollider.enabled = enable;
     }
 }
