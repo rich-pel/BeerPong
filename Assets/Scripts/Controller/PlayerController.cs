@@ -18,11 +18,14 @@ public class PlayerController : MonoBehaviour
     public Transform VRRoot;
     public Transform VRHead;
     public Transform Destination;
+    public Collider RightHandCollider;
+    public Collider LeftHandCollider;
     public SyncedPlayerState RedPlayer;
     public SyncedPlayerState BluePlayer;
 
     public SteamVR_Action_Boolean Input;
     public SteamVR_Input_Sources InputSource = SteamVR_Input_Sources.Any;
+
 
 
     public bool ShowOpponent
@@ -58,6 +61,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        Valve.VR.InteractionSystem.Player.instance.headCollider.enabled = false;
+    }
+
     void OnTriggerPressedOrReleased(SteamVR_Action_Boolean actionIn, SteamVR_Input_Sources inputSource, bool newValue)
     {
         if (newValue)
@@ -74,5 +82,11 @@ public class PlayerController : MonoBehaviour
     public void ApplyBlueOwnership()
     {
         BluePlayer.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[1]);
+    }
+
+    public void SetPlayerCollision(bool enabled)
+    {
+        RightHandCollider.enabled = enabled;
+        LeftHandCollider.enabled = enabled;
     }
 }

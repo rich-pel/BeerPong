@@ -86,6 +86,8 @@ public class BallController : SyncedBallBehavior
     // Called by SteamVR (see inspector)
     public void OnPickUp()
     {
+        PlayerController.Instance.SetPlayerCollision(false);
+
         // Ignore grab if it's not our Turn or we already grabbed the ball once
         if (!GameManager.instance.MyTurn || State == EBallState.Game) return;
 
@@ -96,6 +98,11 @@ public class BallController : SyncedBallBehavior
 
         Debug.Log("I Grabbed the Ball!");
         AudioManager.instance.Play("TakeBall");
+    }
+
+    public void OnDetach()
+    {
+        PlayerController.Instance.SetPlayerCollision(true);
     }
 
     private void BallGrabbed()

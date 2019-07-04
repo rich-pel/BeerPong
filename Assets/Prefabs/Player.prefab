@@ -116,6 +116,8 @@ MonoBehaviour:
   VRRoot: {fileID: 9083671165130397928}
   VRHead: {fileID: 9083671165130465116}
   Destination: {fileID: 0}
+  RightHandCollider: {fileID: 3833083827944413522}
+  LeftHandCollider: {fileID: 2745211994988453299}
   RedPlayer: {fileID: 2689615737230524605}
   BluePlayer: {fileID: 4820955276571741736}
   Input:
