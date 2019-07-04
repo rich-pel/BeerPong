@@ -23,7 +23,6 @@ public class CupController : SyncedCupBehavior
 
     void Start()
     {
-        _defaultAttachmentFlagsForThroable = _throwable.attachmentFlags;
         Init();
     }
 
@@ -35,6 +34,7 @@ public class CupController : SyncedCupBehavior
         body = GetComponent<Rigidbody>();
         _interactable = GetComponent<Interactable>();
         _throwable = GetComponent<Throwable>();
+        _defaultAttachmentFlagsForThroable = _throwable.attachmentFlags;
 
         bInit = true;
     }
