@@ -124,8 +124,9 @@ public class CupController : SyncedCupBehavior
     // RPC, do not call directly!
     public override void SetCupActive(RpcArgs args)
     {
-        gameObject.SetActive(args.GetNext<bool>());
-        SwitchThrowable(args.GetNext<bool>());
+        bool next = args.GetNext<bool>();
+        gameObject.SetActive(next);
+        SwitchThrowable(next);
     }
 
     private void SwitchThrowable(bool getNext)
