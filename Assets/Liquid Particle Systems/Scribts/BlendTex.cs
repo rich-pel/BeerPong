@@ -1,18 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BlendTex : MonoBehaviour
 {
+
+    private Material _material;
     private Renderer _myRenderer;
+
     private float _blendAmount;
-    [SerializeField] private float _speed;
+    private float _speed;
+
+    private float _startTime;
+    private float _currentTime;
 
     // Start is called before the first frame update
     void Start()
     {
-        _speed = 0.01f; // [0.1 : 1]
+        _startTime = 0f;
+        _speed = 0.01f; // [0.01 : 0.1]
         _myRenderer = GetComponent<Renderer>();
+
+        _material = _myRenderer.material;
+
+        // create new own material
+        _myRenderer.sharedMaterial = new Material(_material);
+
         if (_myRenderer == null)
         {
             Debug.Log("Renderer Component is missing");
@@ -23,9 +37,8 @@ public class BlendTex : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        _blendAmount = Time.time * _speed;
-
-        //Debug.Log(_blendAmount);
+        _currentTime += Time.deltaTime;
+        _blendAmount = _currentTime * _speed;
 
         if (_blendAmount < 1)
         {
@@ -35,5 +48,10 @@ public class BlendTex : MonoBehaviour
         {
             this.enabled = false;
         }
+    }
+
+    public void Restart()
+    {
+        _startTime = 0f;
     }
 }

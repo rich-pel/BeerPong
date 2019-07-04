@@ -1,191 +1,156 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
-
-/*
- TODO: Start: Scale radius, Scale height // neu
- TODO          Download for Foam Texture
- 
-*/
-
-// Beschreibung des Cups
-/*
- * Der Cup hat nen Meshfilter, Meshrenderer, collider
- * und nen CupController und nen LiquidController als Componenten
- * Als Kinder mit Foam (particle system attached) und Spillage (particle system) 
- *
- * vlt Foam als plane - da gibts aber schwierigkeiten mit den rändern des bechers, da diese sich verschieben
- *
- * alternative: nur Shader der blubbert, mit werten für die neigung. Der wird auf eine Plane gemacht und dann wird die plan je nach transform gedreht
- * In dem shader gibt es einen kreis, alles andere ist transparent, der kreis wird mit zunehmendem abstand kleiner
- * Schwierigkeit: soll jeder sein eigenes material bekommen? 
- *
- */
 
         
 /// <summary>
-/// Idea: Generate sample points around edge of cup
-/// If one or more is/are under the y-world-height of the liquid 
-/// If there are more under the y-w-h interpolate direction (leap)
-/// If, then activate the second particle system (strahl)
-/// and change direction
+/// Idea: Generate sample points around upper edge of cup;
+/// If one or more is/are under the y-world-height of the liquid -> spilling in correct direction
+/// If there are more under the y-w-h interpolate direction (leap) -> spilling in coorect direction
 /// </summary>
-[RequireComponent(typeof(CupController))]
 public class LiquidController : MonoBehaviour
 {
-    private CupController _cupController;
+    [SerializeField] private GameObject childFoam;
+    [SerializeField] private BlendTex formBlendTex;
+    [SerializeField] private GameObject childSpillage;
+    [SerializeField] private int numberOutlets;
+    private List<GameObject> Outlets = new List<GameObject>();
 
     // CupSpecific
-    [SerializeField] private float editorCupHeight;
-    [SerializeField] private float editorRadius;
+    private float _cupHeight;
+    private float _radius;
 
-    [SerializeField] private float editorMaxFormHeight;
-    [SerializeField] private float editorBaseHeightSpillage;
+    // spillage
+    private Vector3 _target;
 
-    // Logic
-    [SerializeField] private int numberOutlets;
+    // foam
+    private float _angleX;
+    private float _angleZ;
+    private Vector3 _initScale;
 
-    private List<GameObject> Outlets;
-
-
-    // sollte 
-    [SerializeField] private GameObject ChildForm;
-    [SerializeField] private GameObject ChildSpillage;
-
-
-    private Vector3 target;
-
-    private float heightFoam;
-    private float baseHeightSpillage;
-
+    private int _fillLevel = 1000;
 
     // Start is called before the first frame update
     private void Start()
     {
-        // Use Boundingbox of Mesh...
-        // for debugging:
-        //Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
+        _cupHeight = 0.11f; //CupManager.CupHeight;
+        _radius = 0.04f;
 
-        //Debug.Log(mesh.name
-        //          + "\n center: " + mesh.bounds.center
-        //          + "\n extents: " + mesh.bounds.extents
-        //          + "\n max: " + mesh.bounds.max
-        //          + "\n min: " + mesh.bounds.min
-        //          + "\n size: " + mesh.bounds.size);
+        _initScale = childFoam.transform.localScale;
 
-        //foreach (var vert in mesh.vertices)
-        //{
-        //    Debug.Log(vert);
-        //}
-        // Debug.Log("The global scale of one Cup is: " + globalScale(this.transform));
-
-        Refill();
-        _cupController = GetComponent<CupController>();
-
-        Outlets = new List<GameObject>();
         GenerateOutlets(numberOutlets);
     }
 
-    public void Refill()
+    private void OnEnable()
     {
-        // height = 0.75 * globalScale(this.transform);
-        heightFoam = editorCupHeight * editorMaxFormHeight; // 0.8
-        baseHeightSpillage = editorCupHeight * editorBaseHeightSpillage; //0.4
+        _fillLevel = 100;
+        childFoam.SetActive(true);
+        formBlendTex.Restart();
     }
-
 
 
     private void GenerateOutlets(int numOutlets)
     {
         Outlets.Clear();
-
-        // because its a child of this (cup) not necessary
-        // Vector3 basePos = gameObject.transform.position + this.gameObject.transform.forward * cupHeight;
-
-
+       
         for (int i = 0; i < numOutlets; i++)
         {
-            // erstelle neues GameObject 
             GameObject dummy = new GameObject("Point" + i.ToString());
-            // uebernehme die Transformation vom parent (hier hauptsächlich die rotation um -90° in x)
             dummy.transform.parent = transform;
 
             float cornerAngle = 2f * Mathf.PI / (float)numOutlets * i;
-            Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * editorRadius, Mathf.Sin(cornerAngle) * editorRadius, editorCupHeight); //+ basePos;
-            dummy.transform.localPosition = pos;
+            // bei rot.x = -90*
+            // Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * _radius, Mathf.Sin(cornerAngle) * _radius, _cupHeight); //+ basePos;
+            // ohne rot
+            Vector3 pos = new Vector3( Mathf.Cos(cornerAngle) * _radius, 
+                                       _cupHeight, 
+                                       Mathf.Sin(cornerAngle) * _radius); //+ basePos;
 
-            // behalte eine Referenz
+            dummy.transform.localPosition = pos;
             Outlets.Add(dummy);
         }
     }
 
     void Update()
-    //void FixedUpdate()
     {
+        childFoam.transform.up = Vector3.up;
 
-        // calculate direction of spillage particle system
-        int count = 0;
-        target = Vector3.zero;
+        /*
 
+        // ################# F O A M #################
+        // Orientation
+        childFoam.transform.up = Vector3.up; 
+
+        // Scale
+        _angleX = Mathf.Abs( Vector3.Angle(Vector3.up, transform.forward)); // scale
+        _angleZ = Mathf.Abs( Vector3.Angle(Vector3.up, transform.right)); // scale
+
+        Debug.Log("X Angle: " + _angleX);
+        Debug.Log("Z Angle: " + _angleZ);
+
+        // etwas von hinten durch die Brust ins Auge machen
+        //Vector3 _scale = childFoam.transform.localScale;
+
+        Vector3 _scale = _initScale;
+        _scale.x = Mathf.Sin(_angleX); // / _initScale.x;
+        _scale.z = Mathf.Cos(_angleZ); // / _initScale.z;
+
+        if (_scale.x <= 45 && _scale.y <= 45)
+        {
+            childFoam.transform.localScale = _scale;
+            childFoam.SetActive(true);
+        }
+        else
+        {
+            childFoam.SetActive(false);
+        }
+
+        Debug.Log("X Scale: " + _scale.x);
+        Debug.Log("Z Scale: " + _scale.z);
+
+
+    */
+
+
+        // ################# Spillage ################# 
+        int myCount = 0;
+        _target = Vector3.zero;
         foreach (GameObject outlet in Outlets)
         {
-            if (outlet.transform.position.y > transform.position.y)
+            // foam bleibt immer in der mitte des cups
+            if (outlet.transform.position.y <  childFoam.transform.position.y)
             {
-                target += outlet.transform.position;
-                count++;
+                _target += outlet.transform.position;
+                myCount++;
             }
         }
 
+        Debug.Log("Count:" + myCount + " target: " + _target);
 
-        // Manage height
-        //
-        //if (count < 1)
-        //{
-        //    // child Spillage
-        //    Spillage.SetActive(false);
-        //}
-        //else
-        //{
-        //    // Spillage
-        //    Spillage.SetActive(true);
-        //    target *= count;
-        //    Spillage.transform.LookAt(target);
 
-        //    // Foam
-        //    heightFoam -= 0.1f * count;
-
-        //    if (heightFoam <= 0)
-        //    {
-        //        _cupController.Empty = true;
-        //        // deactivates the gameObject 
-        //        _cupController.DeactivateTheCup();
-
-        //    }
-        //}
-
-        // pose of liquid parts
-        ChildForm.transform.LookAt(ChildForm.transform.position + Vector3.up);
-    }
-
-    // TODO: Remove to CupManager / Some Namespace
-    /// <summary>
-    /// Returns the scaling through all parents
-    /// </summary>
-    /// <param name="requestedTransform"></param>
-    /// <returns></returns>
-    private Vector3 globalScale(Transform requestedTransform)
-    {
-        Vector3 _scale = requestedTransform.localScale;
-
-        while (requestedTransform.transform.parent != null)
+        if (myCount > 1)
         {
-            //_scale *= requestedTransform.localScale;
-            _scale = Vector3.Scale(_scale, requestedTransform.localScale);
-            // next recursive level
-            requestedTransform = requestedTransform.transform.parent;
+            //if (_fillLevel > 0)
+            if (true)
+            { 
+                childSpillage.SetActive(true);
+
+                // pq = q-p
+                childSpillage.transform.forward = _target - childSpillage.transform.position;
+                _fillLevel -= myCount;
+            }
+            else
+            {
+                childSpillage.SetActive(false);
+            }
+        }
+        else
+        {
+            childSpillage.SetActive(false);
         }
 
-        return _scale;
+
+
+
     }
 }

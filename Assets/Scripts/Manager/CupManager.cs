@@ -20,19 +20,20 @@ public class CupManager : MonoBehaviour
     public bool AllCupsFound { get; private set; }
     [SerializeField] private CupBundleController playersCupBundle;
     [SerializeField] private CupBundleController enemysCupBundle;
+    public const float CupHeight = 0.11f;
+    public const float CupRadius = 0.04f;
 
 
     public void InitClientCups()
     {
         AllCupsFound = playersCupBundle.InitClient(true) && enemysCupBundle.InitClient(false);
-    }
+    }  
 
     public void InitCups()
     {
         playersCupBundle.Init(true);
         enemysCupBundle.Init(false);
     }
-
     public bool IsMyCup(CupController Cup)
     {
         if (Cup.father == null)
@@ -79,5 +80,26 @@ public class CupManager : MonoBehaviour
     {
         playersCupBundle.SyncCups(sync);
         enemysCupBundle.SyncCups(sync);
+    }
+
+    // set values for controllers
+    public void SetParameter(Mesh cupMesh)
+    {
+        // Use Boundingbox of Mesh...
+        // for debugging:
+        //Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
+
+        //Debug.Log(mesh.name
+        //          + "\n center: " + mesh.bounds.center
+        //          + "\n extents: " + mesh.bounds.extents
+        //          + "\n max: " + mesh.bounds.max
+        //          + "\n min: " + mesh.bounds.min
+        //          + "\n size: " + mesh.bounds.size);
+
+        //foreach (var vert in mesh.vertices)
+        //{
+        //    Debug.Log(vert);
+        //}
+        // Debug.Log("The global scale of one Cup is: " + globalScale(this.transform));
     }
 }
