@@ -35,7 +35,7 @@ public class CounterText : MonoBehaviour
 
         float playedTime = GameManager.instance.GetCurrentPlayedTime();
         int minutes = (int)(playedTime / 60);
-        int seconds = (int)playedTime;
+        int seconds = (int)(playedTime % 60);
         timeText.text = (minutes < 10 ? "0" + minutes : minutes.ToString()) + ":" + (seconds < 10 ? "0" + seconds : seconds.ToString());
 
         bool bIAmBlue = GameManager.instance.IsClient;
