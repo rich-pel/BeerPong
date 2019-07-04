@@ -322,6 +322,12 @@ public class GameManager : GameManagerBehavior
         NextTry();
     }
 
+    public void BallTimedOut()
+    {
+        Debug.Log("Ball timed out... switch Turn");
+        SetTurn(!MyTurn);
+    }
+
     void NextTry()
     {
         if (!IsServer || GameState != EGameState.Running) return;
@@ -347,6 +353,8 @@ public class GameManager : GameManagerBehavior
 
             Debug.Log("Try No. "+currentTry+"/"+MaxTries);
         }
+
+        BallManager.instance.ResetGrabState();
     }
 
     // RPC, do not call directly!

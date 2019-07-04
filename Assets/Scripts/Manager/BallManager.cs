@@ -1,4 +1,5 @@
-﻿using BeardedManStudios.Forge.Networking.Unity;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class BallManager : MonoBehaviour
@@ -16,10 +17,9 @@ public class BallManager : MonoBehaviour
     [SerializeField] private BallController throwableBall;
     [SerializeField] private GameObject playersBallHolderArea;
     [SerializeField] private GameObject enemysBallHolderArea;
-    [SerializeField] private int moveableTimeForBall = 10;
 
-    private float timeOutForBall;
-    private bool ballTimeIsTracked = false;
+    private const float ballTimeoutSeconds = 10.0f;
+    private bool ballInteracted = false;
 
     private int audioCountUp = 0;
     [SerializeField] private int ballDippingMax = 3;
@@ -40,21 +40,6 @@ public class BallManager : MonoBehaviour
         }
 
         ballBody = throwableBall.GetComponent<Rigidbody>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (BallIsInAction())
-        {
-            ballTimeIsTracked = !ballTimeIsTracked;
-            GameManager.instance.BallFellBeside();
-        }
-
-        if (GetCurrentTimeLeft() <=0)
-        {
-            GameManager.instance.BallFellBeside();
-        }
     }
 
     public void DetachFromHand()
@@ -99,7 +84,29 @@ public class BallManager : MonoBehaviour
         if (GameManager.instance.IsServer && GameManager.instance.GameState == GameManager.EGameState.Running)
         {
             throwableBall.SetOwnership(myBall);
+
+            ballInteracted = false;
+            StartCoroutine(StartBallTimeout());
         }
+    }
+
+    public void ResetGrabState()
+    {
+        ballInteracted = false;
+    }
+
+    IEnumerator StartBallTimeout()
+    {
+        yield return new WaitForSeconds(ballTimeoutSeconds);
+        if (!ballInteracted)
+        {
+            GameManager.instance.BallTimedOut();
+        }
+    }
+
+    public void BallIsGrabbed()
+    {
+        GameManager.instance.BallWasGrabbed();
     }
 
     public bool AmIOwnerOfBall()
@@ -107,42 +114,24 @@ public class BallManager : MonoBehaviour
         return throwableBall.networkObject.IsOwner;
     }
 
-    public void BallIsGrabbed()
-    {
-        ballTimeIsTracked = true;
-        timeOutForBall = Time.time + 10;
-        GameManager.instance.BallWasGrabbed();
-    }
-
-    public float GetCurrentTimeLeft()
-    {
-        if (ballTimeIsTracked)
-            return timeOutForBall - Time.time;
-        else
-            return moveableTimeForBall;
-    }
-
     public void BallInteracted(string gameObjectTag)
     {
+        ballInteracted = true;
+
         //Maybe here use the tag names also for the audio files -> just for performance
         //AudioManager.instance.Play(gameObjectTag)
-        
+
         //Maybe just if the collision enter the ballFallBeside
         if (gameObjectTag.Equals("Ground"))
         {
-            GameManager.instance.BallFellBeside();
             AudioManager.instance.Play("BallHitGround");
         }
         else if (gameObjectTag.Equals("Wall"))
         {
-            GameManager.instance.BallFellBeside();
-
             AudioManager.instance.Play("BallHitWall");
         }
         else if (gameObjectTag.Equals("Table"))
         {
-            GameManager.instance.BallFellBeside();
-
             audioCountUp++;
             AudioManager.instance.Play("BallHitTable" + audioCountUp);
             if (audioCountUp >= ballDippingMax)
@@ -150,14 +139,16 @@ public class BallManager : MonoBehaviour
         }
         else if (gameObjectTag.Equals("Counter"))
         {
-            GameManager.instance.BallFellBeside();
             AudioManager.instance.Play("BallHitCounter");
         }
+
+        GameManager.instance.BallFellBeside();
     }
 
-    public bool BallIsInAction()
+    public void BallFellInCup(CupController cup)
     {
-        return ballTimeIsTracked && timeOutForBall < Time.time;
+        ballInteracted = true;
+        GameManager.instance.BallFellInCup(cup);
     }
 
     public bool BallFallsOutOfTheRoom(Vector3 ballPosition)

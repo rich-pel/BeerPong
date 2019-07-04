@@ -175,7 +175,7 @@ public class BallController : SyncedBallBehavior
                 Debug.LogError("Object tagged as Cup '"+other+"' does not have a CupController attached!");
                 return;
             }
-            GameManager.instance.BallFellInCup(cup);
+            BallManager.instance.BallFellInCup(cup);
             AudioManager.instance.Play("BallHitCup");
         }
     }
