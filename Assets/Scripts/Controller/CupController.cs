@@ -18,11 +18,13 @@ public class CupController : SyncedCupBehavior
 
     private Interactable _interactable;
     private Throwable _throwable;
+    private Hand.AttachmentFlags _defaultAttachmentFlagsForThroable;
 
 
     void Start()
     {
         Init();
+        _defaultAttachmentFlagsForThroable = _throwable.attachmentFlags;
     }
 
     public void Init()
@@ -120,5 +122,9 @@ public class CupController : SyncedCupBehavior
     {
         _interactable.enabled = getNext;
         _throwable.enabled = getNext;
+        if (getNext)
+            _throwable.attachmentFlags = _defaultAttachmentFlagsForThroable;
+        else
+            _throwable.attachmentFlags = 0;
     }
 }
