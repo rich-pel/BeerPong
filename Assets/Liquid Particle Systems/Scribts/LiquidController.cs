@@ -125,7 +125,7 @@ public class LiquidController : MonoBehaviour
             }
         }
 
-        Debug.Log("Count:" + myCount + " target: " + _target);
+        //Debug.Log("Count:" + myCount + " target: " + _target);
 
 
         if (myCount > 1)
