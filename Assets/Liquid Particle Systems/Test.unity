@@ -372,5 +372,10 @@ PrefabInstance:
       propertyPath: childSpillage
       value: 
       objectReference: {fileID: 556148534}
+    - target: {fileID: 8686201074213650414, guid: e6125dc8929903f4ea5d211a4b270108,
+        type: 3}
+      propertyPath: moveWithTransform
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e6125dc8929903f4ea5d211a4b270108, type: 3}

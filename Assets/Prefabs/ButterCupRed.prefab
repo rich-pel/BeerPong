@@ -196,7 +196,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 2
   randomSeed: 0
@@ -9990,5 +9990,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   childFoam: {fileID: 8686201074157715526}
   formBlendTex: {fileID: 8686201074157715640}
-  childSpillage: {fileID: 8686201074598925571}
+  childSpillage: {fileID: 8686201074213650413}
   numberOutlets: 20

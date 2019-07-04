@@ -28,7 +28,7 @@ public class LiquidController : MonoBehaviour
     private float _angleZ;
     private Vector3 _initScale;
 
-    private int _fillLevel = 100;
+    private int _fillLevel = 1000;
 
     // Start is called before the first frame update
     private void Start()
@@ -73,6 +73,8 @@ public class LiquidController : MonoBehaviour
 
     void Update()
     {
+        childFoam.transform.up = Vector3.up;
+
         /*
 
         // ################# F O A M #################
@@ -116,7 +118,7 @@ public class LiquidController : MonoBehaviour
         foreach (GameObject outlet in Outlets)
         {
             // foam bleibt immer in der mitte des cups
-            if (outlet.transform.position.y < childFoam.transform.position.y)
+            if (outlet.transform.position.y <  childFoam.transform.position.y)
             {
                 _target += outlet.transform.position;
                 myCount++;
@@ -128,7 +130,9 @@ public class LiquidController : MonoBehaviour
 
         if (myCount > 1)
         {
-            if (_fillLevel > 0) { 
+            //if (_fillLevel > 0)
+            if (true)
+            { 
                 childSpillage.SetActive(true);
 
                 // pq = q-p
