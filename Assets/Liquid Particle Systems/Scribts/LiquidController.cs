@@ -11,7 +11,7 @@ using UnityEngine;
 public class LiquidController : MonoBehaviour
 {
     [SerializeField] private GameObject childFoam;
-    [SerializeField] private BlendTex formRenderer;
+    [SerializeField] private BlendTex formBlendTex;
 
     [SerializeField] private GameObject childSpillage;
 
@@ -41,7 +41,7 @@ public class LiquidController : MonoBehaviour
     {
         _fillLevel = 100f;
         childFoam.SetActive(true);
-        formRenderer.Restart();
+        formBlendTex.Restart();
     }
 
 
@@ -55,7 +55,10 @@ public class LiquidController : MonoBehaviour
             dummy.transform.parent = transform;
 
             float cornerAngle = 2f * Mathf.PI / (float)numOutlets * i;
-            Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * _radius, Mathf.Sin(cornerAngle) * _radius, _cupHeight); //+ basePos;
+            // bei rot.x = -90*
+            // Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * _radius, Mathf.Sin(cornerAngle) * _radius, _cupHeight); //+ basePos;
+            // ohne rot
+            Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * _radius, _cupHeight, Mathf.Sin(cornerAngle) * _radius); //+ basePos;
             dummy.transform.localPosition = pos;
 
             Outlets.Add(dummy);
@@ -88,8 +91,8 @@ public class LiquidController : MonoBehaviour
 
         // etwas von hinten durch die Brust und durchs ins Auge machen
         Vector3 _scale = childFoam.transform.localScale;
-        _scale.x = Mathf.Acos(_angleX); // /0.4f;
-        _scale.y = Mathf.Acos(_angleY); // /0.4f;
+        _scale.x = Mathf.Cos(_angleX); // /0.4f;
+        _scale.y = Mathf.Cos(_angleY); // /0.4f;
         childFoam.transform.localScale = _scale;
 
 
