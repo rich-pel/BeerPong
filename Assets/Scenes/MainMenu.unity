@@ -187,6 +187,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 8.79e-43
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 1.0712e-41
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 1.0712e-41
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 4122134
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 248bbc7cb4524c948911d403e619e4db, type: 3}
 --- !u!4 &50998290 stripped
@@ -365,6 +385,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
+        type: 3}
+      propertyPath: m_Name
+      value: Table (1)
+      objectReference: {fileID: 0}
     - target: {fileID: 17345997978504030, guid: 5340677f222a9894cb469a2e304ef4ce,
         type: 3}
       propertyPath: m_RootOrder
@@ -384,11 +409,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 17345997978504029, guid: 5340677f222a9894cb469a2e304ef4ce,
-        type: 3}
-      propertyPath: m_Name
-      value: Table (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5340677f222a9894cb469a2e304ef4ce, type: 3}
@@ -769,7 +789,7 @@ Transform:
   m_GameObject: {fileID: 820632271}
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -2.99, y: 1.5, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
@@ -1154,6 +1174,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 248bbc7cb4524c948911d403e619e4db, type: 3}
 --- !u!4 &1066502333 stripped
@@ -1483,6 +1508,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.b
       value: 0.253649
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 2582548
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 8.79e-43
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 2582548
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 248bbc7cb4524c948911d403e619e4db, type: 3}
@@ -2425,6 +2465,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 8.125e-42
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 1.0318e-41
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 1.0318e-41
+      objectReference: {fileID: 0}
+    - target: {fileID: 4354781757677522717, guid: 248bbc7cb4524c948911d403e619e4db,
+        type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 8.125e-42
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 248bbc7cb4524c948911d403e619e4db, type: 3}
 --- !u!4 &1983581491 stripped
@@ -2642,7 +2702,7 @@ Transform:
   m_GameObject: {fileID: 2024832818}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 2.99, y: 1.5, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
