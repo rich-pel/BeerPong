@@ -23,8 +23,8 @@ public class CupController : SyncedCupBehavior
 
     void Start()
     {
-        Init();
         _defaultAttachmentFlagsForThroable = _throwable.attachmentFlags;
+        Init();
     }
 
     public void Init()
