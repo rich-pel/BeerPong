@@ -171,7 +171,7 @@ MonoBehaviour:
   enemysBallHolderArea: {fileID: 22605757}
   moveableTimeForBall: 10
   ballDippingMax: 3
-  _maxDistanceFromRoom: 0
+  _maxDistanceFromRoom: 10
 --- !u!114 &16655439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,7 +760,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NetworkPrefabIndex: 0
-  radius: 0.7
+  radius: 0.07
 --- !u!1 &801948544
 GameObject:
   m_ObjectHideFlags: 0
@@ -1908,8 +1908,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bda094d74e40c634da88637326d63bca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NetworkPrefabIndex: 0
-  radius: 0.7
+  NetworkPrefabIndex: 1
+  radius: 0.07
 --- !u!1001 &2097409558
 PrefabInstance:
   m_ObjectHideFlags: 0
