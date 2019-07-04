@@ -2,6 +2,7 @@
 using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 
 // NOTE: Interpolating the cups seems like a BAD idea...
@@ -15,6 +16,9 @@ public class CupController : SyncedCupBehavior
     private bool sync = true;
     private bool bInit = false;
 
+    private Interactable _interactable;
+    private Throwable _throwable;
+
 
     void Start()
     {
@@ -27,6 +31,8 @@ public class CupController : SyncedCupBehavior
 
         // no check required because of RequireComponent
         body = GetComponent<Rigidbody>();
+        _interactable = GetComponent<Interactable>();
+        _throwable = GetComponent<Throwable>();
 
         bInit = true;
     }
@@ -107,5 +113,12 @@ public class CupController : SyncedCupBehavior
     public override void SetCupActive(RpcArgs args)
     {
         gameObject.SetActive(args.GetNext<bool>());
+        SwitchThrowable(args.GetNext<bool>());
+    }
+
+    private void SwitchThrowable(bool getNext)
+    {
+        _interactable.enabled = getNext;
+        _throwable.enabled = getNext;
     }
 }
