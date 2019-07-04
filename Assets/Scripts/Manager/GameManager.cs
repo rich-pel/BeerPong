@@ -120,11 +120,16 @@ public class GameManager : GameManagerBehavior
         if (NetworkManager.Instance != null)
         {
             NetworkManager.Instance.Disconnect();
-            Destroy(NetworkManager.Instance.gameObject);
+            //Destroy(NetworkManager.Instance.gameObject); // null exception?
         }
 
         if (BMSLogger.Instance != null) Destroy(BMSLogger.Instance.gameObject);
         if (MainThreadManager.Instance != null) Destroy(MainThreadManager.Instance.gameObject);
+
+        if (PlayerController.Instance != null)
+        {
+            Destroy(PlayerController.Instance.gameObject);
+        }
 
         SceneManager.LoadScene("MainMenu");
     }
