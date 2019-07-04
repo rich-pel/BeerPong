@@ -1,5 +1,6 @@
 ﻿using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking.Unity;
+using Valve.VR.InteractionSystem;
 using UnityEngine;
 
 public class SyncedPlayerState : SyncedPlayerBehavior
@@ -33,8 +34,8 @@ public class SyncedPlayerState : SyncedPlayerBehavior
         if (ShowOpponent && head == null)
         {
             head = Instantiate(HeadPrefab, networkObject.headPosition, networkObject.headRotation);
-            rightHand = Instantiate(HandPrefab, networkObject.headPosition, networkObject.headRotation);
-            leftHand = Instantiate(HeadPrefab, networkObject.headPosition, networkObject.headRotation);
+            rightHand = Instantiate(HandPrefab, networkObject.rightHandPosition, networkObject.rightHandRotation);
+            leftHand = Instantiate(HandPrefab, networkObject.leftHandPosition, networkObject.leftHandRotation);
 
             // mirror hand model for left hand
             Vector3 scale = leftHand.transform.localScale;

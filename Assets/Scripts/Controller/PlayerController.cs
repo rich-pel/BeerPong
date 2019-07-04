@@ -1,4 +1,6 @@
-﻿using BeardedManStudios.Forge.Networking.Generated;
+﻿using System;
+using System.Collections;
+using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking.Unity;
 using Valve.VR;
 using UnityEngine;
@@ -61,11 +63,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        Valve.VR.InteractionSystem.Player.instance.headCollider.enabled = false;
-    }
-
     void OnTriggerPressedOrReleased(SteamVR_Action_Boolean actionIn, SteamVR_Input_Sources inputSource, bool newValue)
     {
         if (newValue)
@@ -84,7 +81,25 @@ public class PlayerController : MonoBehaviour
         BluePlayer.networkObject.AssignOwnership(NetworkManager.Instance.Networker.Players[1]);
     }
 
-    public void SetPlayerCollision(bool enabled)
+    public void SetPlayerCollision(bool enable)
+    {
+        if (enable)
+        {
+            StartCoroutine(DelayedCollisionEnable(enable));
+        }
+        else
+        {
+            EnableHandCollisions(enable);
+        }
+    }
+
+    IEnumerator DelayedCollisionEnable(bool enable)
+    {
+        yield return new WaitForSeconds(2.0f);
+        EnableHandCollisions(enable);
+    }
+
+    void EnableHandCollisions(bool enable)
     {
         RightHandCollider.enabled = enabled;
         LeftHandCollider.enabled = enabled;
