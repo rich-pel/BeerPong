@@ -12,12 +12,10 @@ public class BlurController : MonoBehaviour
     [SerializeField] [Range(0.001f, 2f)] 
     private float _speed = 0.5f;
     private float _maxBlur;
-    private float _totalMaxBlur = 0.05f;
+    private float _totalMaxBlur = 0.005f;
     private float _blurSize;
     private float _oldBlurSize;
 
-    [SerializeField] private bool playerOrEnemy; // ich liebes auf eine Oder-Frage mit JA zu antworten
-    // true is Player
 
     private void Start()
     {
@@ -26,7 +24,7 @@ public class BlurController : MonoBehaviour
 
         //TODO                  Who am I ?
 
-        playerOrEnemy = transform.root.name == "Player";
+        
 
         // ********************************************************
 
@@ -43,19 +41,15 @@ public class BlurController : MonoBehaviour
     void Update()
     {
         // How many beer did you drink/ how many did the other hit
-        if (playerOrEnemy)
+        if (GameManager.instance.IsServer)
         {
             _maxBlur = GameManager.instance.GetBluePoints() / (float)GameManager.MaxPoints;
             _maxBlur *= _totalMaxBlur;
         }
-        else if (playerOrEnemy)
+        else
         {
             _maxBlur = GameManager.instance.GetRedPoints() / (float)GameManager.MaxPoints;
             _maxBlur *= _totalMaxBlur;
-        }
-        else
-        {
-            _maxBlur = 0.0f;
         }
 
         // _maxBlur = 0.05f;
