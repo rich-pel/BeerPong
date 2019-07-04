@@ -12,21 +12,23 @@ public class LiquidController : MonoBehaviour
 {
     [SerializeField] private GameObject childFoam;
     [SerializeField] private BlendTex formBlendTex;
-
     [SerializeField] private GameObject childSpillage;
-
     [SerializeField] private int numberOutlets;
     private List<GameObject> Outlets = new List<GameObject>();
 
     // CupSpecific
     private float _cupHeight;
     private float _radius;
+
+    // spillage
     private Vector3 _target;
+
+    // foam
     private float _angleX;
-    private float _angleY;
+    private float _angleZ;
+    private Vector3 _initScale;
 
-
-    private float _fillLevel = 100f;
+    private int _fillLevel = 100;
 
     // Start is called before the first frame update
     private void Start()
@@ -34,12 +36,14 @@ public class LiquidController : MonoBehaviour
         _cupHeight = 0.11f; //CupManager.CupHeight;
         _radius = 0.04f;
 
+        _initScale = childFoam.transform.localScale;
+
         GenerateOutlets(numberOutlets);
     }
 
     private void OnEnable()
     {
-        _fillLevel = 100f;
+        _fillLevel = 100;
         childFoam.SetActive(true);
         formBlendTex.Restart();
     }
@@ -58,55 +62,91 @@ public class LiquidController : MonoBehaviour
             // bei rot.x = -90*
             // Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * _radius, Mathf.Sin(cornerAngle) * _radius, _cupHeight); //+ basePos;
             // ohne rot
-            Vector3 pos = new Vector3(Mathf.Cos(cornerAngle) * _radius, _cupHeight, Mathf.Sin(cornerAngle) * _radius); //+ basePos;
-            dummy.transform.localPosition = pos;
+            Vector3 pos = new Vector3( Mathf.Cos(cornerAngle) * _radius, 
+                                       _cupHeight, 
+                                       Mathf.Sin(cornerAngle) * _radius); //+ basePos;
 
+            dummy.transform.localPosition = pos;
             Outlets.Add(dummy);
         }
     }
 
     void Update()
     {
+        /*
 
-        // Get state of cup
-        int count = 0;
+        // ################# F O A M #################
+        // Orientation
+        childFoam.transform.up = Vector3.up; 
+
+        // Scale
+        _angleX = Mathf.Abs( Vector3.Angle(Vector3.up, transform.forward)); // scale
+        _angleZ = Mathf.Abs( Vector3.Angle(Vector3.up, transform.right)); // scale
+
+        Debug.Log("X Angle: " + _angleX);
+        Debug.Log("Z Angle: " + _angleZ);
+
+        // etwas von hinten durch die Brust ins Auge machen
+        //Vector3 _scale = childFoam.transform.localScale;
+
+        Vector3 _scale = _initScale;
+        _scale.x = Mathf.Sin(_angleX); // / _initScale.x;
+        _scale.z = Mathf.Cos(_angleZ); // / _initScale.z;
+
+        if (_scale.x <= 45 && _scale.y <= 45)
+        {
+            childFoam.transform.localScale = _scale;
+            childFoam.SetActive(true);
+        }
+        else
+        {
+            childFoam.SetActive(false);
+        }
+
+        Debug.Log("X Scale: " + _scale.x);
+        Debug.Log("Z Scale: " + _scale.z);
+
+
+    */
+
+
+        // ################# Spillage ################# 
+        int myCount = 0;
         _target = Vector3.zero;
         foreach (GameObject outlet in Outlets)
         {
             // foam bleibt immer in der mitte des cups
-            if (outlet.transform.position.y > childFoam.transform.position.y )
+            if (outlet.transform.position.y < childFoam.transform.position.y)
             {
-                _target += outlet.transform.localPosition;
-                count++;
+                _target += outlet.transform.position;
+                myCount++;
             }
         }
 
-        // hanlde Foam
-        childFoam.transform.LookAt(Vector3.up); // Orientation
-        _angleX = Vector3.Angle(Vector3.right, transform.forward); // scale
-        _angleY = Vector3.Angle(Vector3.up, transform.forward); // scale
-
-        Debug.Log("X: " + _angleX);
-        Debug.Log("Y: " + _angleY);
-
-        // etwas von hinten durch die Brust und durchs ins Auge machen
-        Vector3 _scale = childFoam.transform.localScale;
-        _scale.x = Mathf.Cos(_angleX); // /0.4f;
-        _scale.y = Mathf.Cos(_angleY); // /0.4f;
-        childFoam.transform.localScale = _scale;
+        Debug.Log("Count:" + myCount + " target: " + _target);
 
 
-        // handle Spillage 
-        if(count < 1 && _fillLevel > 0)
+        if (myCount > 1)
         {
-            childSpillage.SetActive(true);
-            childSpillage.transform.forward = _target.normalized;
-            _fillLevel -= count;
+            if (_fillLevel > 0) { 
+                childSpillage.SetActive(true);
+
+                // pq = q-p
+                childSpillage.transform.forward = _target - childSpillage.transform.position;
+                _fillLevel -= myCount;
+            }
+            else
+            {
+                childSpillage.SetActive(false);
+            }
         }
         else
         {
-            // Spillage
             childSpillage.SetActive(false);
         }
+
+
+
+
     }
 }
