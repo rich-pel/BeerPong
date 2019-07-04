@@ -78,6 +78,16 @@ public class CupController : SyncedCupBehavior
     //    networkObject.positionInterpolation.Enabled = enabled;
     //}
 
+    public void OnPickup()
+    {
+        PlayerController.Instance.SetPlayerCollision(false);
+    }
+
+    public void OnDetach()
+    {
+        PlayerController.Instance.SetPlayerCollision(true);
+    }
+
     public void SetSync(bool sync)
     {
         //SetInterpolation(sync);
