@@ -9,6 +9,7 @@ public class Watcher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //GameManager has to be activate because of some other infected this GameObject
         Manager.gameObject.SetActive(true);
     }
 }

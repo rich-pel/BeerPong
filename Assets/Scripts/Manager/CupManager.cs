@@ -17,18 +17,22 @@ public class CupManager : MonoBehaviour
 
     #endregion
 
+    public bool AllCupsFound { get; private set; }
     [SerializeField] private CupBundleController playersCupBundle;
     [SerializeField] private CupBundleController enemysCupBundle;
-
-
     public const float CupHeight = 0.11f;
     public const float CupRadius = 0.04f;
-    
+
+
+    public void InitClientCups()
+    {
+        AllCupsFound = playersCupBundle.InitClient(true) && enemysCupBundle.InitClient(false);
+    }  
 
     public void InitCups()
     {
-        playersCupBundle.Init();
-        enemysCupBundle.Init();
+        playersCupBundle.Init(true);
+        enemysCupBundle.Init(false);
     }
     public bool IsMyCup(CupController Cup)
     {
@@ -58,17 +62,20 @@ public class CupManager : MonoBehaviour
         enemysCupBundle.SetCupsOwnership(IOwnThem);
     }
 
+    // Gets also called by Client!
     public bool AmIOwnerOfCups()
     {
         return playersCupBundle.AmIOwnerOfCups() && enemysCupBundle.AmIOwnerOfCups();
     }
 
+    // Gets also called by Client!
     public void ResetCups(bool activeOnly)
     {
         playersCupBundle.ResetCups(activeOnly);
         enemysCupBundle.ResetCups(activeOnly);
     }
 
+    // Gets also called by Client!
     public void SyncCups(bool sync)
     {
         playersCupBundle.SyncCups(sync);

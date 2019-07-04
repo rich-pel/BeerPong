@@ -2,6 +2,7 @@
 using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 
 // NOTE: Interpolating the cups seems like a BAD idea...
@@ -11,16 +12,29 @@ using UnityEngine;
 public class CupController : SyncedCupBehavior
 {
     public CupBundleController father;
-    private Vector3 homePosition;
-    private Quaternion homeRotation;
     private Rigidbody body;
     private bool sync = true;
+    private bool bInit = false;
+
+    private Interactable _interactable;
+    private Throwable _throwable;
+
 
     void Start()
     {
-        homePosition = transform.position;
-        homeRotation = transform.rotation;
-        body = GetComponent<Rigidbody>(); // no check required because of RequireComponent
+        Init();
+    }
+
+    public void Init()
+    {
+        if (bInit) return;
+
+        // no check required because of RequireComponent
+        body = GetComponent<Rigidbody>();
+        _interactable = GetComponent<Interactable>();
+        _throwable = GetComponent<Throwable>();
+
+        bInit = true;
     }
 
     private void FixedUpdate()
@@ -88,8 +102,8 @@ public class CupController : SyncedCupBehavior
         gameObject.SetActive(false);
         //body.MovePosition(homePosition);
         //body.MoveRotation(homeRotation);
-        transform.position = homePosition;
-        transform.rotation = homeRotation;
+        transform.position = networkObject.homePosition;
+        transform.rotation = networkObject.homeRotation;
         body.angularVelocity = Vector3.zero;
         body.velocity = Vector3.zero;
         gameObject.SetActive(true);
@@ -99,5 +113,12 @@ public class CupController : SyncedCupBehavior
     public override void SetCupActive(RpcArgs args)
     {
         gameObject.SetActive(args.GetNext<bool>());
+        SwitchThrowable(args.GetNext<bool>());
+    }
+
+    private void SwitchThrowable(bool getNext)
+    {
+        _interactable.enabled = getNext;
+        _throwable.enabled = getNext;
     }
 }

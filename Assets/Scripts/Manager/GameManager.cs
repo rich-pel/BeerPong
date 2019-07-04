@@ -64,9 +64,9 @@ public class GameManager : GameManagerBehavior
     {
         if (IsServer)
         {
+            CupManager.instance.InitCups(); // this must happen before Reset!
             Reset(false);
             GameState = EGameState.WaitingForConnection;
-            CupManager.instance.InitCups();
 
             NetworkManager.Instance.Networker.playerDisconnected += ThreadPipe.Pipe(OnPlayerDisconnected);
             NetworkManager.Instance.Networker.playerRejected += ThreadPipe.Pipe(OnPlayerRejected);
@@ -79,6 +79,7 @@ public class GameManager : GameManagerBehavior
             // teleport us to proper position
             PlayerController.Instance.Destination = PlayerBlueStart;
             PlayerController.Instance.ResetPosition();
+            PlayerController.Instance.ShowOpponent = true;
         }
     }
 
@@ -89,6 +90,7 @@ public class GameManager : GameManagerBehavior
 
         Reset(false);
         GameState = EGameState.WaitingForConnection;
+        PlayerController.Instance.ShowOpponent = false;
     }
 
     // Server Event
@@ -102,6 +104,8 @@ public class GameManager : GameManagerBehavior
     {
         Debug.Log("Player " + player.Ip + " accepted!");
         Reset(true);
+        PlayerController.Instance.ApplyBlueOwnership();
+        PlayerController.Instance.ShowOpponent = true;
     }
 
     // Client Event
@@ -116,11 +120,16 @@ public class GameManager : GameManagerBehavior
         if (NetworkManager.Instance != null)
         {
             NetworkManager.Instance.Disconnect();
-            Destroy(NetworkManager.Instance.gameObject);
+            //Destroy(NetworkManager.Instance.gameObject); // null exception?
         }
 
         if (BMSLogger.Instance != null) Destroy(BMSLogger.Instance.gameObject);
         if (MainThreadManager.Instance != null) Destroy(MainThreadManager.Instance.gameObject);
+
+        if (PlayerController.Instance != null)
+        {
+            Destroy(PlayerController.Instance.gameObject);
+        }
 
         SceneManager.LoadScene("MainMenu");
     }
@@ -155,6 +164,11 @@ public class GameManager : GameManagerBehavior
         // ========== Client code ==========
         if (!networkObject.IsServer)
         {
+            if (!CupManager.instance.AllCupsFound)
+            {
+                CupManager.instance.InitClientCups();
+            }
+
             if (waitForHandshake)
             {
                 bool amIOwnerOfBall = BallManager.instance.AmIOwnerOfBall();
