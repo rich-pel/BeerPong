@@ -130,11 +130,11 @@ public class CupController : SyncedCupBehavior
 
     private void SwitchThrowable(bool getNext)
     {
-        _interactable.enabled = getNext;
-        _throwable.enabled = getNext;
         if (getNext)
             _throwable.attachmentFlags = _defaultAttachmentFlagsForThroable;
         else
             _throwable.attachmentFlags = 0;
+        _interactable.enabled = getNext;
+        _throwable.enabled = getNext;
     }
 }
